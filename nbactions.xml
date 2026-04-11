@@ -12,10 +12,10 @@
             </goals>
             <properties>
                 <exec.vmArgs></exec.vmArgs>
-                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.args></exec.args>
                 <exec.appArgs></exec.appArgs>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
-                <exec.executable>java</exec.executable>
+                <exec.mainClass></exec.mainClass>
+                <exec.executable></exec.executable>
             </properties>
         </action>
     </actions>

@@ -1,5 +1,6 @@
 package com.mycompany.supermercadoedd.aplicacion;
 
+import com.mycompany.supermercadoedd.modelos.Producto;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -11,16 +12,11 @@ public class Principal extends Application {
     @Override
     public void start(Stage stage) {
         Label label = new Label("Sistema de Gestión de Supermercados");
-
-        StackPane root = new StackPane(label);
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(new StackPane(label), 900, 600);
 
         stage.setTitle("Supermercado EDD");
         stage.setScene(scene);
         stage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
