@@ -264,4 +264,256 @@ public class ArbolB<T extends Comparable<T>> {
         // Aumenta el número de claves del padre
         padre.numeroClaves++;
     }
+    
+    // Elimina una clave del árbol
+    public void eliminar(T clave) {
+        // Si el árbol está vacío, no hay nada que eliminar
+        if (estaVacio()) {
+            return;
+        }
+
+        eliminar(raiz, clave);
+
+        // Si la raíz queda vacía y no es hoja,
+        // se reemplaza por su primer hijo
+        if (raiz.numeroClaves == 0 && !raiz.esHoja) {
+            raiz = raiz.hijos[0];
+        }
+    }
+    
+    // Realiza la eliminación recursiva
+    private void eliminar(NodoB nodo, T clave) {
+        int indice = encontrarIndice(nodo, clave);
+
+        // Si la clave existe en este nodo
+        if (indice < nodo.numeroClaves &&
+            nodo.claves[indice].compareTo(clave) == 0) {
+
+            // Si es hoja, se elimina directamente
+            if (nodo.esHoja) {
+                eliminarDeHoja(nodo, indice);
+            } else {
+                 eliminarDeInterno(nodo, indice);
+            }
+
+        } else {
+
+            // Si es hoja y no existe, termina
+            if (nodo.esHoja) {
+                return;
+            }
+
+            // Continúa la búsqueda en el hijo correcto
+            if (nodo.hijos[indice].numeroClaves < GRADO) {
+                llenar(nodo, indice);
+            }
+
+            eliminar(nodo.hijos[indice], clave);
+        }
+    }
+    
+    // Encuentra la posición de una clave dentro del nodo
+    private int encontrarIndice(NodoB nodo, T clave) {
+        int indice = 0;
+
+        while (indice < nodo.numeroClaves &&
+               nodo.claves[indice].compareTo(clave) < 0) {
+            indice++;
+        }
+
+        return indice;
+    }
+    
+    // Elimina una clave desde un nodo hoja
+    private void eliminarDeHoja(NodoB nodo, int indice) {
+        // Desplaza las claves hacia la izquierda
+        for (int i = indice + 1; i < nodo.numeroClaves; i++) {
+            nodo.claves[i - 1] = nodo.claves[i];
+        }
+
+        // Reduce la cantidad de claves
+        nodo.numeroClaves--;
+    }
+    
+    // Elimina una clave ubicada en un nodo interno
+    private void eliminarDeInterno(NodoB nodo, int indice) {
+        T clave = nodo.claves[indice];
+
+        // Si el hijo izquierdo tiene suficientes claves
+        if (nodo.hijos[indice].numeroClaves >= GRADO) {
+
+            T predecesor = obtenerPredecesor(nodo, indice);
+
+            nodo.claves[indice] = predecesor;
+
+            eliminar(nodo.hijos[indice], predecesor);
+
+        }
+        // Si el hijo derecho tiene suficientes claves
+        else if (nodo.hijos[indice + 1].numeroClaves >= GRADO) {
+
+            T sucesor = obtenerSucesor(nodo, indice);
+
+            nodo.claves[indice] = sucesor;
+
+            eliminar(nodo.hijos[indice + 1], sucesor);
+
+        }
+        // Si ambos hijos tienen pocas claves
+        else {
+
+            fusionar(nodo, indice);
+
+            eliminar(nodo.hijos[indice], clave);
+        }
+    }
+    
+    // Obtiene el predecesor de una clave
+    private T obtenerPredecesor(NodoB nodo, int indice) {
+        NodoB actual = nodo.hijos[indice];
+
+        // Baja hasta el nodo más a la derecha
+        while (!actual.esHoja) {
+            actual = actual.hijos[actual.numeroClaves];
+        }
+
+        return actual.claves[actual.numeroClaves - 1];
+    }
+    
+    // Obtiene el sucesor de una clave
+    private T obtenerSucesor(NodoB nodo, int indice) {
+        NodoB actual = nodo.hijos[indice + 1];
+
+        // Baja hasta el nodo más a la izquierda
+        while (!actual.esHoja) {
+            actual = actual.hijos[0];
+        }
+
+        return actual.claves[0];
+    }
+    
+    // Fusiona dos hijos alrededor de una clave del padre
+    private void fusionar(NodoB nodo, int indice) {
+        NodoB hijo = nodo.hijos[indice];
+        NodoB hermano = nodo.hijos[indice + 1];
+
+        // Baja la clave del padre al hijo izquierdo
+        hijo.claves[GRADO - 1] = nodo.claves[indice];
+
+        // Copia las claves del hermano
+        for (int i = 0; i < hermano.numeroClaves; i++) {
+            hijo.claves[i + GRADO] = hermano.claves[i];
+        }
+
+        // Si no son hojas, copia también los hijos
+        if (!hijo.esHoja) {
+            for (int i = 0; i <= hermano.numeroClaves; i++) {
+                hijo.hijos[i + GRADO] = hermano.hijos[i];
+            }
+        }
+
+        // Desplaza claves del padre
+        for (int i = indice + 1; i < nodo.numeroClaves; i++) {
+            nodo.claves[i - 1] = nodo.claves[i];
+        }
+
+        // Desplaza hijos del padre
+        for (int i = indice + 2; i <= nodo.numeroClaves; i++) {
+            nodo.hijos[i - 1] = nodo.hijos[i];
+        }
+
+        // Actualiza contadores
+        hijo.numeroClaves += hermano.numeroClaves + 1;
+        nodo.numeroClaves--;
+    }
+    
+        // Garantiza que el hijo tenga suficientes claves antes de descender
+    private void llenar(NodoB nodo, int indice) {
+
+        // Intenta préstamo desde el hermano izquierdo
+        if (indice != 0 &&
+            nodo.hijos[indice - 1].numeroClaves >= GRADO) {
+
+            prestarDeAnterior(nodo, indice);
+        }
+        // Intenta préstamo desde el hermano derecho
+        else if (indice != nodo.numeroClaves &&
+                 nodo.hijos[indice + 1].numeroClaves >= GRADO) {
+
+            prestarDeSiguiente(nodo, indice);
+        }
+        // Si no puede prestar, fusiona
+        else {
+
+            if (indice != nodo.numeroClaves) {
+                fusionar(nodo, indice);
+            } else {
+                fusionar(nodo, indice - 1);
+            }
+        }
+    }
+    
+    // Toma una clave prestada del hermano izquierdo
+    private void prestarDeAnterior(NodoB nodo, int indice) {
+        NodoB hijo = nodo.hijos[indice];
+        NodoB hermano = nodo.hijos[indice - 1];
+
+        // Desplaza claves del hijo hacia la derecha
+        for (int i = hijo.numeroClaves - 1; i >= 0; i--) {
+            hijo.claves[i + 1] = hijo.claves[i];
+        }
+
+        // Si no es hoja, desplaza también los hijos
+        if (!hijo.esHoja) {
+            for (int i = hijo.numeroClaves; i >= 0; i--) {
+                hijo.hijos[i + 1] = hijo.hijos[i];
+            }
+        }
+
+        // Baja la clave del padre al hijo
+        hijo.claves[0] = nodo.claves[indice - 1];
+
+        // Si no es hoja, mueve también el último hijo del hermano
+        if (!hijo.esHoja) {
+            hijo.hijos[0] = hermano.hijos[hermano.numeroClaves];
+        }
+
+        // Sube la última clave del hermano al padre
+        nodo.claves[indice - 1] = hermano.claves[hermano.numeroClaves - 1];
+
+        hijo.numeroClaves++;
+        hermano.numeroClaves--;
+    }
+    
+    // Toma una clave prestada del hermano derecho
+    private void prestarDeSiguiente(NodoB nodo, int indice) {
+        NodoB hijo = nodo.hijos[indice];
+        NodoB hermano = nodo.hijos[indice + 1];
+
+        // Baja la clave del padre al final del hijo
+        hijo.claves[hijo.numeroClaves] = nodo.claves[indice];
+
+        // Si no es hoja, mueve también el primer hijo del hermano
+        if (!hijo.esHoja) {
+            hijo.hijos[hijo.numeroClaves + 1] = hermano.hijos[0];
+        }
+
+        // Sube la primera clave del hermano al padre
+        nodo.claves[indice] = hermano.claves[0];
+
+        // Desplaza claves del hermano hacia la izquierda
+        for (int i = 1; i < hermano.numeroClaves; i++) {
+            hermano.claves[i - 1] = hermano.claves[i];
+        }
+
+        // Si no es hoja, desplaza también los hijos
+        if (!hermano.esHoja) {
+            for (int i = 1; i <= hermano.numeroClaves; i++) {
+                hermano.hijos[i - 1] = hermano.hijos[i];
+            }
+        }
+
+        hijo.numeroClaves++;
+        hermano.numeroClaves--;
+    }
 }
