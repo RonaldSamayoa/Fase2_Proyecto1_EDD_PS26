@@ -3,7 +3,9 @@ package com.mycompany.supermercadoedd.modelos;
  *
  * @author ronald
  */
-public class Producto {
+// Representa un producto dentro del sistema
+public class Producto implements Comparable<Producto> {
+
     private String nombre;
     private String codigoBarras;
     private String categoria;
@@ -12,10 +14,11 @@ public class Producto {
     private double precio;
     private int stock;
 
-    // Constructor de la clase Producto.
+    // Inicializa un nuevo producto con todos sus datos
     public Producto(String nombre, String codigoBarras, String categoria,
                     String fechaCaducidad, String marca,
                     double precio, int stock) {
+
         this.nombre = nombre;
         this.codigoBarras = codigoBarras;
         this.categoria = categoria;
@@ -25,11 +28,11 @@ public class Producto {
         this.stock = stock;
     }
 
-    // Getters y Setters
     public String getNombre() {
         return nombre;
     }
 
+    // Modifica el nombre del producto
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -38,6 +41,7 @@ public class Producto {
         return codigoBarras;
     }
 
+    // Modifica el código de barras
     public void setCodigoBarras(String codigoBarras) {
         this.codigoBarras = codigoBarras;
     }
@@ -46,6 +50,7 @@ public class Producto {
         return categoria;
     }
 
+    // Modifica la categoría
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
@@ -54,6 +59,7 @@ public class Producto {
         return fechaCaducidad;
     }
 
+    // Modifica la fecha de caducidad
     public void setFechaCaducidad(String fechaCaducidad) {
         this.fechaCaducidad = fechaCaducidad;
     }
@@ -62,6 +68,7 @@ public class Producto {
         return marca;
     }
 
+    // Modifica la marca
     public void setMarca(String marca) {
         this.marca = marca;
     }
@@ -70,6 +77,7 @@ public class Producto {
         return precio;
     }
 
+    // Modifica el precio
     public void setPrecio(double precio) {
         this.precio = precio;
     }
@@ -78,10 +86,19 @@ public class Producto {
         return stock;
     }
 
+    // Modifica el stock
     public void setStock(int stock) {
         this.stock = stock;
     }
 
+    // Compara productos usando código de barras
+    // Se utiliza como clave principal por estabilidad
+    @Override
+    public int compareTo(Producto otro) {
+        return this.codigoBarras.compareTo(otro.codigoBarras);
+    }
+
+    // Convierte el objeto a texto para mostrar información
     @Override
     public String toString() {
         return "Producto{" +
