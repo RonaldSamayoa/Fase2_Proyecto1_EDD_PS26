@@ -8,7 +8,7 @@ package com.mycompany.supermercadoedd.estructuras;
 public class ArbolB<T extends Comparable<T>> {
 
     // Define el grado fijo del Árbol B
-    // Se utiliza grado 3 por facilidad académica y mejor visualización
+    // Se utiliza grado 3 por facilidad y mejor visualización
     private final int GRADO = 3;
 
     // Define la estructura interna de cada nodo
