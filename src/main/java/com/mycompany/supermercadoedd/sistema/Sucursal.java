@@ -3,6 +3,7 @@ import com.mycompany.supermercadoedd.estructuras.ArbolAVL;
 import com.mycompany.supermercadoedd.estructuras.ArbolB;
 import com.mycompany.supermercadoedd.estructuras.ArbolBPlus;
 import com.mycompany.supermercadoedd.estructuras.ListaEnlazada;
+import com.mycompany.supermercadoedd.estructuras.Pila;
 import com.mycompany.supermercadoedd.estructuras.TablaHash;
 import com.mycompany.supermercadoedd.modelos.Producto;
 /**
@@ -25,6 +26,9 @@ public class Sucursal {
     private TablaHash<String, Producto> tablaHash;
     private ArbolB<Producto> arbolB;
     private ArbolBPlus<Producto> arbolBPlus;
+    
+    // Guarda el historial de operaciones para deshacer cambios posteriores
+    private Pila<OperacionRollback> historialCambios;
 
     // Inicializa una nueva sucursal
     public Sucursal(int id, String nombre, String ubicacion,
@@ -44,23 +48,169 @@ public class Sucursal {
         tablaHash = new TablaHash<>();
         arbolB = new ArbolB<>();
         arbolBPlus = new ArbolBPlus<>();
+        historialCambios = new Pila<>(); // Inicializa la pila de historial de cambios
     }
 
     // Inserta un producto en todas las estructuras
-    public void agregarProducto(Producto producto) {
+    public boolean agregarProducto(Producto producto) {
+        // Se crea la pila para rollback
+        Pila<OperacionRollback> pilaRollback = new Pila<>();
 
-        inventario.insertarAlFinal(producto);
+        try {
 
-        arbolAVL.insertar(producto);
+            // Inserta en lista enlazada
+            inventario.insertarAlFinal(producto);
 
-        tablaHash.insertar(
-                producto.getCodigoBarras(),
-                producto
-        );
+            pilaRollback.apilar(
+                    new OperacionRollback(
+                            id,
+                            producto,
+                            "LISTA"
+                    )
+            );
 
-        arbolB.insertar(producto);
+            // Inserta en AVL
+            arbolAVL.insertar(producto);
 
-        arbolBPlus.insertar(producto);
+            pilaRollback.apilar(
+                    new OperacionRollback(
+                            id,
+                            producto,
+                            "AVL"
+                    )
+            );
+
+            // Inserta en tabla hash
+            tablaHash.insertar(
+                    producto.getCodigoBarras(),
+                    producto
+            );
+
+            pilaRollback.apilar(
+                    new OperacionRollback(
+                            id,
+                            producto,
+                            "HASH"
+                    )
+            );
+
+            // Inserta en Árbol B
+            arbolB.insertar(producto);
+
+            pilaRollback.apilar(
+                    new OperacionRollback(
+                            id,
+                            producto,
+                            "ARBOL_B"
+                    )
+            );
+
+            // Inserta en Árbol B+
+            arbolBPlus.insertar(producto);
+
+            pilaRollback.apilar(
+                    new OperacionRollback(
+                            id,
+                            producto,
+                            "ARBOL_B_PLUS"
+                    )
+            );
+            
+            // Registra la operación para permitir deshacer posteriormente
+            historialCambios.apilar(
+                    new OperacionRollback(
+                            id,
+                            producto,
+                            "AGREGAR_PRODUCTO"
+                    )
+            );
+
+            return true; // Si todo salió bien
+
+        } catch (Exception e) {
+
+            realizarRollback(pilaRollback); // Si algo falla, revierte todo
+            return false;
+        }   
+    }
+    
+    // Revierte todas las operaciones realizadas
+    private void realizarRollback(
+            Pila<OperacionRollback> pilaRollback) {
+
+        while (!pilaRollback.estaVacia()) {
+
+            OperacionRollback operacion =
+                    pilaRollback.desapilar();
+
+            String estructura =
+                    operacion.getEstructura();
+
+            Producto producto =
+                    operacion.getProducto();
+
+            // Se deshace según la estructura afectada
+            switch (estructura) {
+
+                case "LISTA":
+                    inventario.eliminar(producto);
+                    break;
+
+                case "AVL":
+                    arbolAVL.eliminar(producto);
+                    break;
+
+                case "HASH":
+                    tablaHash.eliminar(
+                            producto.getCodigoBarras()
+                    );
+                    break;
+
+                case "ARBOL_B":
+                    arbolB.eliminar(producto);
+                    break;
+
+                case "ARBOL_B_PLUS":
+                    arbolBPlus.eliminar(producto);
+                    break;
+            }
+        }
+    }
+    
+    // Deshace la última operación registrada
+    public boolean deshacerUltimaOperacion() {
+
+        // Verifica si no existen operaciones registradas
+        if (historialCambios.estaVacia()) {
+            return false;
+        }
+
+        OperacionRollback operacion =
+                historialCambios.desapilar();
+
+        Producto producto =
+                operacion.getProducto();
+
+        String tipoOperacion =
+                operacion.getEstructura();
+
+        switch (tipoOperacion) {
+
+            case "AGREGAR_PRODUCTO":
+
+                // Elimina el producto de todas las estructuras
+                inventario.eliminar(producto);
+                arbolAVL.eliminar(producto);
+                tablaHash.eliminar(
+                        producto.getCodigoBarras()
+                );
+                arbolB.eliminar(producto);
+                arbolBPlus.eliminar(producto);
+
+                return true;
+        }
+
+        return false;
     }
 
     // Retorna el id de la sucursal

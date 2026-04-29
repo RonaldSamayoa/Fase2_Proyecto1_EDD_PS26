@@ -146,6 +146,40 @@ public class ListaEnlazada<T> {
         tamanio--;
         return dato;
     }
+    
+    // Elimina la primera aparición de un dato específico
+    public boolean eliminar(T dato) {
+
+        // Verifica si la lista está vacía
+        if (estaVacia()) {
+            return false;
+        }
+
+        // Caso especial: el dato está en la cabeza
+        if (cabeza.dato.equals(dato)) {
+            cabeza = cabeza.siguiente;
+            tamanio--;
+            return true;
+        }
+
+        Nodo<T> actual = cabeza;
+
+        // Busca el nodo anterior al que se desea eliminar
+        while (actual.siguiente != null) {
+
+            if (actual.siguiente.dato.equals(dato)) {
+
+                actual.siguiente = actual.siguiente.siguiente;
+                tamanio--;
+                return true;
+            }
+
+            actual = actual.siguiente;
+        }
+
+        // Si no se encontró el dato
+        return false;
+    }
 
     //Obtiene un elemento según su posición.
     public T obtener(int indice) {
