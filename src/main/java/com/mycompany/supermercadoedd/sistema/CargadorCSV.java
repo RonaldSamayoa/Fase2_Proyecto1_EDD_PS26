@@ -91,13 +91,19 @@ public class CargadorCSV {
                     }
 
                     // Inserta el producto en el sistema
-                    sistema.registrarProducto(
+                    boolean insertado = sistema.registrarProducto(
                             idSucursal,
                             producto
                     );
 
-                    resultado.agregarExitoso();
-
+                    if (insertado) {
+                        resultado.agregarExitoso();
+                    } else {
+                        resultado.agregarFallido(
+                                "Línea " + numeroLinea +
+                                ": fallo durante inserción (rollback ejecutado)"
+                        );
+                    }
                 } catch (Exception e) {
 
                     // Si algo falla, no detiene el sistema

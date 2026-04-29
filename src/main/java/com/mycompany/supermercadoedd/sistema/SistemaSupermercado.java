@@ -45,15 +45,16 @@ public class SistemaSupermercado {
     }
 
     // Registra un producto dentro de su sucursal correspondiente
-    public void registrarProducto(int idSucursal, Producto producto) {
+    public boolean registrarProducto(int idSucursal, Producto producto) {
 
         // Busca la sucursal destino
         Sucursal sucursal = buscarSucursalPorId(idSucursal);
 
         // Si existe, inserta el producto
         if (sucursal != null) {
-            sucursal.agregarProducto(producto);
+            return sucursal.agregarProducto(producto);
         }
+        return false;
     }
 
     // Muestra todas las sucursales registradas
