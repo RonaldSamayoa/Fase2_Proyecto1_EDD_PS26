@@ -57,7 +57,6 @@ public class Sucursal {
         Pila<OperacionRollback> pilaRollback = new Pila<>();
 
         try {
-
             // Inserta en lista enlazada
             inventario.insertarAlFinal(producto);
 
@@ -72,13 +71,7 @@ public class Sucursal {
             // Inserta en AVL
             arbolAVL.insertar(producto);
 
-            pilaRollback.apilar(
-                    new OperacionRollback(
-                            id,
-                            producto,
-                            "AVL"
-                    )
-            );
+            pilaRollback.apilar(new OperacionRollback(id, producto,"AVL"));
 
             // Inserta en tabla hash
             tablaHash.insertar(
@@ -87,43 +80,23 @@ public class Sucursal {
             );
 
             pilaRollback.apilar(
-                    new OperacionRollback(
-                            id,
-                            producto,
-                            "HASH"
-                    )
-            );
+                    new OperacionRollback(id,producto,"HASH"));
 
             // Inserta en Árbol B
             arbolB.insertar(producto);
 
             pilaRollback.apilar(
-                    new OperacionRollback(
-                            id,
-                            producto,
-                            "ARBOL_B"
-                    )
-            );
+                    new OperacionRollback(id, producto,"ARBOL_B"));
 
             // Inserta en Árbol B+
             arbolBPlus.insertar(producto);
 
             pilaRollback.apilar(
-                    new OperacionRollback(
-                            id,
-                            producto,
-                            "ARBOL_B_PLUS"
-                    )
-            );
+                    new OperacionRollback(id, producto,"ARBOL_B_PLUS") );
             
             // Registra la operación para permitir deshacer posteriormente
             historialCambios.apilar(
-                    new OperacionRollback(
-                            id,
-                            producto,
-                            "AGREGAR_PRODUCTO"
-                    )
-            );
+                    new OperacionRollback(id, producto,"AGREGAR_PRODUCTO"));
 
             return true; // Si todo salió bien
 
@@ -140,14 +113,11 @@ public class Sucursal {
 
         while (!pilaRollback.estaVacia()) {
 
-            OperacionRollback operacion =
-                    pilaRollback.desapilar();
+            OperacionRollback operacion = pilaRollback.desapilar();
 
-            String estructura =
-                    operacion.getEstructura();
+            String estructura = operacion.getEstructura();
 
-            Producto producto =
-                    operacion.getProducto();
+            Producto producto = operacion.getProducto();
 
             // Se deshace según la estructura afectada
             switch (estructura) {
@@ -179,20 +149,16 @@ public class Sucursal {
     
     // Deshace la última operación registrada
     public boolean deshacerUltimaOperacion() {
-
         // Verifica si no existen operaciones registradas
         if (historialCambios.estaVacia()) {
             return false;
         }
 
-        OperacionRollback operacion =
-                historialCambios.desapilar();
+        OperacionRollback operacion = historialCambios.desapilar();
 
-        Producto producto =
-                operacion.getProducto();
+        Producto producto = operacion.getProducto();
 
-        String tipoOperacion =
-                operacion.getEstructura();
+        String tipoOperacion = operacion.getEstructura();
 
         switch (tipoOperacion) {
 
@@ -201,15 +167,19 @@ public class Sucursal {
                 // Elimina el producto de todas las estructuras
                 inventario.eliminar(producto);
                 arbolAVL.eliminar(producto);
-                tablaHash.eliminar(
-                        producto.getCodigoBarras()
-                );
+                tablaHash.eliminar(producto.getCodigoBarras());
                 arbolB.eliminar(producto);
                 arbolBPlus.eliminar(producto);
 
                 return true;
-        }
+                
+            case "ELIMINAR_PRODUCTO":
+                // Si se deshace una eliminación,
+                // se vuelve a insertar en todas las estructuras
+                agregarProducto(producto);
 
+                return true;
+        }
         return false;
     }
 
@@ -255,9 +225,7 @@ public class Sucursal {
     // Disminuye el stock de un producto si existe suficiente cantidad.
     // Retorna true si la operación fue exitosa.
     public boolean disminuirStock(String codigoBarras, int cantidad) {
-
-        Producto producto =
-                buscarProductoPorCodigo(codigoBarras);
+        Producto producto = buscarProductoPorCodigo(codigoBarras);
 
         // Si no existe el producto, falla
         if (producto == null) {
@@ -270,19 +238,14 @@ public class Sucursal {
         }
 
         // Se descuenta la cantidad solicitada
-        producto.setStock(
-                producto.getStock() - cantidad
-        );
-
+        producto.setStock(producto.getStock() - cantidad );
         return true;
     }
 
     // Aumenta el stock de un producto existente.
     // Si no existe, retorna false.
     public boolean aumentarStock(String codigoBarras, int cantidad) {
-
-        Producto producto =
-                buscarProductoPorCodigo(codigoBarras);
+        Producto producto = buscarProductoPorCodigo(codigoBarras);
 
         // Si no existe, no puede aumentarse
         if (producto == null) {
@@ -290,10 +253,48 @@ public class Sucursal {
         }
 
         // Se suma la nueva cantidad
-        producto.setStock(
-                producto.getStock() + cantidad
-        );
-
+        producto.setStock(producto.getStock() + cantidad);
         return true;
+    }
+    
+    // Elimina un producto usando su código de barras
+    // La eliminación debe propagarse a todas las estructuras
+    public boolean eliminarProducto(String codigoBarras) {
+        // Primero se busca el producto usando la tabla hash porque es la estructura más rápida para localizarlo
+        Producto producto = buscarProductoPorCodigo(codigoBarras);
+
+        // Si no existe, no puede eliminarse
+        if (producto == null) {
+            return false;
+        }
+
+        try {
+
+            // Se elimina de la lista enlazada principal
+            inventario.eliminar(producto);
+
+            // Se elimina del árbol AVL
+            arbolAVL.eliminar(producto);
+
+            // Se elimina de la tabla hash
+            tablaHash.eliminar(
+                    producto.getCodigoBarras()
+            );
+
+            // Se elimina del Árbol B
+            arbolB.eliminar(producto);
+
+            // Se elimina del Árbol B+
+            arbolBPlus.eliminar(producto);
+
+            // Se registra en historial para permitir
+            // futuras operaciones de deshacer
+            historialCambios.apilar(new OperacionRollback(id,producto,"ELIMINAR_PRODUCTO" ));
+            return true;
+
+        } catch (Exception e) {
+            // Si ocurre algún error inesperado, se reporta como fallo
+            return false;
+        }
     }
 }

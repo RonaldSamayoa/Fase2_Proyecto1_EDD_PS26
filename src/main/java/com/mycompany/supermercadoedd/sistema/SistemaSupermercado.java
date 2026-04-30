@@ -141,4 +141,21 @@ public class SistemaSupermercado {
         );
         return true;
     }
+    
+    // Elimina un producto de una sucursal específica
+    // usando su código de barras
+    public boolean eliminarProducto(int idSucursal, String codigoBarras) {
+        // Busca la sucursal correspondiente
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si la sucursal no existe, falla
+        if (sucursal == null) {
+            return false;
+        }
+
+        // Delega la eliminación a la sucursal
+        return sucursal.eliminarProducto(
+                codigoBarras
+        );
+    }
 }
