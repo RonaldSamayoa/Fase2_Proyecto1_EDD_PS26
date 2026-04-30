@@ -245,4 +245,55 @@ public class Sucursal {
                 ", tiempoDespacho=" + tiempoDespacho +
                 '}';
     }
+    
+    // Busca un producto usando su código de barras.
+    // Se aprovecha la tabla hash porque la búsqueda es más rápida.
+    public Producto buscarProductoPorCodigo(String codigoBarras) {
+        return tablaHash.obtener(codigoBarras);
+    }
+
+    // Disminuye el stock de un producto si existe suficiente cantidad.
+    // Retorna true si la operación fue exitosa.
+    public boolean disminuirStock(String codigoBarras, int cantidad) {
+
+        Producto producto =
+                buscarProductoPorCodigo(codigoBarras);
+
+        // Si no existe el producto, falla
+        if (producto == null) {
+            return false;
+        }
+
+        // Si no hay suficiente stock, falla
+        if (producto.getStock() < cantidad) {
+            return false;
+        }
+
+        // Se descuenta la cantidad solicitada
+        producto.setStock(
+                producto.getStock() - cantidad
+        );
+
+        return true;
+    }
+
+    // Aumenta el stock de un producto existente.
+    // Si no existe, retorna false.
+    public boolean aumentarStock(String codigoBarras, int cantidad) {
+
+        Producto producto =
+                buscarProductoPorCodigo(codigoBarras);
+
+        // Si no existe, no puede aumentarse
+        if (producto == null) {
+            return false;
+        }
+
+        // Se suma la nueva cantidad
+        producto.setStock(
+                producto.getStock() + cantidad
+        );
+
+        return true;
+    }
 }
