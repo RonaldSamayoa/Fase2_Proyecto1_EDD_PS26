@@ -171,4 +171,22 @@ public class SistemaSupermercado {
         // Se delega la búsqueda a la sucursal
         return sucursal.buscarProductosPorRangoFecha(fechaInicio,fechaFin);
     }
+    
+    // Busca productos por categoría dentro de una sucursal específica
+    public ListaEnlazada<Producto> buscarProductosPorCategoria(int idSucursal, String categoria) {
+        // Se busca primero la sucursal correspondiente
+        Sucursal sucursal =
+                buscarSucursalPorId(idSucursal);
+
+        // Si la sucursal no existe,
+        // se retorna una lista vacía
+        if (sucursal == null) {
+            return new ListaEnlazada<>();
+        }
+
+        // Se delega la búsqueda a la sucursal
+        return sucursal.buscarProductosPorCategoria(
+                categoria
+        );
+    }
 }

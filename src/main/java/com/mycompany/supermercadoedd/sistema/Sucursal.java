@@ -24,7 +24,7 @@ public class Sucursal {
     private ArbolAVL<Producto> arbolAVL;
     private TablaHash<String, Producto> tablaHash;
     private ArbolB<String> arbolB;
-    private ArbolBPlus<Producto> arbolBPlus;
+    private ArbolBPlus<String> arbolBPlus;
     
     // Guarda el historial de operaciones para deshacer cambios posteriores
     private Pila<OperacionRollback> historialCambios;
@@ -77,7 +77,7 @@ public class Sucursal {
                     new OperacionRollback(id, producto,"ARBOL_B"));
 
             // Inserta en Árbol B+
-            arbolBPlus.insertar(producto);
+            arbolBPlus.insertar(producto.getCategoria());
 
             pilaRollback.apilar( new OperacionRollback(id, producto,"ARBOL_B_PLUS") );
             
@@ -123,7 +123,7 @@ public class Sucursal {
                     break;
 
                 case "ARBOL_B_PLUS":
-                    arbolBPlus.eliminar(producto);
+                    arbolBPlus.eliminar(producto.getCategoria());
                     break;
             }
         }
@@ -148,7 +148,7 @@ public class Sucursal {
                 arbolAVL.eliminar(producto);
                 tablaHash.eliminar(producto.getCodigoBarras());
                 arbolB.eliminar(producto.getFechaCaducidad());
-                arbolBPlus.eliminar(producto);
+                arbolBPlus.eliminar(producto.getCategoria());
 
                 return true;
                 
@@ -260,7 +260,7 @@ public class Sucursal {
             arbolB.eliminar(producto.getFechaCaducidad());
 
             // Se elimina del Árbol B+
-            arbolBPlus.eliminar(producto);
+            arbolBPlus.eliminar(producto.getCategoria());
 
             // Se registra en historial
             historialCambios.apilar(new OperacionRollback(id,producto,"ELIMINAR_PRODUCTO" ));
@@ -322,6 +322,35 @@ public class Sucursal {
                 }
             }
         }
+        return resultados;
+    }
+    
+    public ListaEnlazada<Producto> buscarProductosPorCategoria(String categoria) {
+        // Lista final de resultados
+        ListaEnlazada<Producto> resultados =
+                new ListaEnlazada<>();
+
+        // Primero se consulta el Árbol B+
+        // Si la categoría no existe, no se sigue buscando
+        if (!arbolBPlus.buscar(categoria)) {
+            return resultados;
+        }
+
+        // Si existe, se recorre el inventario real
+        // para recuperar los productos completos
+        for (int i = 0; i < inventario.obtenerTamanio(); i++) {
+
+            Producto producto =
+                    inventario.obtener(i);
+
+            // Se compara la categoría exacta
+            if (producto.getCategoria()
+                    .equalsIgnoreCase(categoria)) {
+
+                resultados.insertarAlFinal(producto);
+            }
+        }
+
         return resultados;
     }
 }
