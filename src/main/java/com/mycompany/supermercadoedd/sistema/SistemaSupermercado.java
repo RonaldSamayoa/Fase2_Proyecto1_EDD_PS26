@@ -40,7 +40,6 @@ public class SistemaSupermercado {
                 return actual;
             }
         }
-
         // Si no existe, retorna null
         return null;
     }
@@ -60,9 +59,7 @@ public class SistemaSupermercado {
     // Muestra todas las sucursales registradas
     public void mostrarSucursales() {
         for (int i = 0; i < sucursales.obtenerTamanio(); i++) {
-            System.out.println(
-                    sucursales.obtener(i)
-            );
+            System.out.println( sucursales.obtener(i));
         }
     }
 
@@ -73,12 +70,10 @@ public class SistemaSupermercado {
     
     // Traslada cierta cantidad de un producto
     // desde una sucursal origen hacia una sucursal destino
-    public boolean trasladarProducto(int idOrigen, int idDestino,
-            String codigoBarras, int cantidad) {
+    public boolean trasladarProducto(int idOrigen, int idDestino,String codigoBarras, int cantidad) {
 
         // Busca ambas sucursales
         Sucursal origen = buscarSucursalPorId(idOrigen);
-
         Sucursal destino = buscarSucursalPorId(idDestino);
 
         // Si alguna no existe, falla
@@ -117,19 +112,13 @@ public class SistemaSupermercado {
         // Intenta aumentar en destino
         boolean aumento = destino.aumentarStock(codigoBarras,cantidad);
 
-        // Si no existe el producto en destino,
-        // se crea una copia e inserta
+        // Si no existe el producto en destino, se crea una copia e inserta
         if (!aumento) {
             Producto nuevoProducto =
                     new Producto(
-                            productoOrigen.getNombre(),
-                            productoOrigen.getCodigoBarras(),
-                            productoOrigen.getCategoria(),
-                            productoOrigen.getFechaCaducidad(),
-                            productoOrigen.getMarca(),
-                            productoOrigen.getPrecio(),
-                            cantidad
-                    );
+                            productoOrigen.getNombre(),productoOrigen.getCodigoBarras(), productoOrigen.getCategoria(),
+                            productoOrigen.getFechaCaducidad(), productoOrigen.getMarca(), productoOrigen.getPrecio(),
+                            cantidad);
             destino.agregarProducto(nuevoProducto);
         }
 
@@ -139,8 +128,7 @@ public class SistemaSupermercado {
         return true;
     }
     
-    // Elimina un producto de una sucursal específica
-    // usando su código de barras
+    // Elimina un producto de una sucursal específica usando su código de barras
     public boolean eliminarProducto(int idSucursal, String codigoBarras) {
         // Busca la sucursal correspondiente
         Sucursal sucursal = buscarSucursalPorId(idSucursal);
@@ -149,7 +137,6 @@ public class SistemaSupermercado {
         if (sucursal == null) {
             return false;
         }
-
         // Delega la eliminación a la sucursal
         return sucursal.eliminarProducto(codigoBarras);
     }
@@ -168,8 +155,20 @@ public class SistemaSupermercado {
                 return producto;
             }
         }
-
         // Si no existe en ninguna sucursal
         return null;
+    }
+    
+    public ListaEnlazada<Producto> buscarProductosPorRangoFecha(int idSucursal, String fechaInicio,String fechaFin) {
+        // Primero se localiza la sucursal
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si no existe la sucursal, se retorna una lista vacía
+        if (sucursal == null) {
+            return new ListaEnlazada<>();
+        }
+
+        // Se delega la búsqueda a la sucursal
+        return sucursal.buscarProductosPorRangoFecha(fechaInicio,fechaFin);
     }
 }

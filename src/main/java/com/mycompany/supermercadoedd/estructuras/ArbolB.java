@@ -6,14 +6,12 @@ package com.mycompany.supermercadoedd.estructuras;
  */
 // Implementa la estructura base de un Árbol B genérico
 public class ArbolB<T extends Comparable<T>> {
-
     // Define el grado fijo del Árbol B
     // Se utiliza grado 3 por facilidad y mejor visualización
     private final int GRADO = 3;
 
     // Define la estructura interna de cada nodo
     private class NodoB {
-
         T[] claves; // Almacena las claves del nodo
         NodoB[] hijos; // Almacena las referencias a los hijos
         int numeroClaves; // Indica cuántas claves tiene actualmente
@@ -22,7 +20,6 @@ public class ArbolB<T extends Comparable<T>> {
         // Inicializa un nuevo nodo del Árbol B
         @SuppressWarnings("unchecked")
         public NodoB(boolean esHoja) {
-
             // Se reserva espacio para el máximo de claves
             // Fórmula: 2 * t - 1
             claves = (T[]) new Comparable[2 * GRADO - 1];
@@ -43,7 +40,6 @@ public class ArbolB<T extends Comparable<T>> {
 
     // Inicializa el Árbol B
     public ArbolB() {
-
         // La raíz inicia como una hoja vacía
         raiz = new NodoB(true);
     }
@@ -65,7 +61,6 @@ public class ArbolB<T extends Comparable<T>> {
 
     // Realiza la búsqueda recursiva
     private boolean buscar(NodoB nodo, T clave) {
-
         int i = 0;
 
         // Busca la posición correcta dentro del nodo
@@ -95,7 +90,6 @@ public class ArbolB<T extends Comparable<T>> {
 
     // Implementa el recorrido recursivo
     private void recorrido(NodoB nodo) {
-
         int i;
 
         // Recorre todas las claves y sus hijos
@@ -150,7 +144,6 @@ public class ArbolB<T extends Comparable<T>> {
     
         // Inserta una nueva clave en el árbol
     public void insertar(T clave) {
-
         NodoB raizActual = raiz;
 
         // Si la raíz está llena, debe dividirse
@@ -180,7 +173,6 @@ public class ArbolB<T extends Comparable<T>> {
     
         // Inserta una clave en un nodo que no está lleno
     private void insertarNoLleno(NodoB nodo, T clave) {
-
         int i = nodo.numeroClaves - 1;
 
         // Si el nodo es hoja, se inserta directamente
@@ -197,7 +189,6 @@ public class ArbolB<T extends Comparable<T>> {
             nodo.numeroClaves++;
 
         } else {
-
             // Busca el hijo correcto
             while (i >= 0 && clave.compareTo(nodo.claves[i]) < 0) {
                 i--;
@@ -207,7 +198,6 @@ public class ArbolB<T extends Comparable<T>> {
 
             // Si el hijo está lleno, primero debe dividirse
             if (estaLleno(nodo.hijos[i])) {
-
                 dividirHijo(nodo, i, nodo.hijos[i]);
 
                 // Determina si debe avanzar al siguiente hijo
@@ -223,7 +213,6 @@ public class ArbolB<T extends Comparable<T>> {
     
         // Divide un hijo lleno en dos nodos
     private void dividirHijo(NodoB padre, int posicion, NodoB nodoLleno) {
-
         // Se crea el nuevo nodo para la mitad derecha
         NodoB nuevoNodo = new NodoB(nodoLleno.esHoja);
 
@@ -297,7 +286,6 @@ public class ArbolB<T extends Comparable<T>> {
             }
 
         } else {
-
             // Si es hoja y no existe, termina
             if (nodo.esHoja) {
                 return;
@@ -320,7 +308,6 @@ public class ArbolB<T extends Comparable<T>> {
                nodo.claves[indice].compareTo(clave) < 0) {
             indice++;
         }
-
         return indice;
     }
     
@@ -341,29 +328,21 @@ public class ArbolB<T extends Comparable<T>> {
 
         // Si el hijo izquierdo tiene suficientes claves
         if (nodo.hijos[indice].numeroClaves >= GRADO) {
-
             T predecesor = obtenerPredecesor(nodo, indice);
-
             nodo.claves[indice] = predecesor;
-
             eliminar(nodo.hijos[indice], predecesor);
 
         }
         // Si el hijo derecho tiene suficientes claves
         else if (nodo.hijos[indice + 1].numeroClaves >= GRADO) {
-
             T sucesor = obtenerSucesor(nodo, indice);
-
             nodo.claves[indice] = sucesor;
-
             eliminar(nodo.hijos[indice + 1], sucesor);
 
         }
         // Si ambos hijos tienen pocas claves
         else {
-
             fusionar(nodo, indice);
-
             eliminar(nodo.hijos[indice], clave);
         }
     }
@@ -376,7 +355,6 @@ public class ArbolB<T extends Comparable<T>> {
         while (!actual.esHoja) {
             actual = actual.hijos[actual.numeroClaves];
         }
-
         return actual.claves[actual.numeroClaves - 1];
     }
     
@@ -388,7 +366,6 @@ public class ArbolB<T extends Comparable<T>> {
         while (!actual.esHoja) {
             actual = actual.hijos[0];
         }
-
         return actual.claves[0];
     }
     
@@ -429,7 +406,6 @@ public class ArbolB<T extends Comparable<T>> {
     
         // Garantiza que el hijo tenga suficientes claves antes de descender
     private void llenar(NodoB nodo, int indice) {
-
         // Intenta préstamo desde el hermano izquierdo
         if (indice != 0 &&
             nodo.hijos[indice - 1].numeroClaves >= GRADO) {
@@ -444,7 +420,6 @@ public class ArbolB<T extends Comparable<T>> {
         }
         // Si no puede prestar, fusiona
         else {
-
             if (indice != nodo.numeroClaves) {
                 fusionar(nodo, indice);
             } else {
@@ -515,5 +490,44 @@ public class ArbolB<T extends Comparable<T>> {
 
         hijo.numeroClaves++;
         hermano.numeroClaves--;
+    }
+    
+    public ListaEnlazada<T> buscarPorRango(T inicio, T fin) {
+        // Lista donde se guardarán los resultados encontrados
+        ListaEnlazada<T> resultados = new ListaEnlazada<>();
+
+        // Se inicia el recorrido recursivo desde la raíz
+        buscarPorRango( raiz, inicio, fin, resultados );
+        return resultados;
+    }
+    
+    // Recorre el árbol y agrega todas las claves que estén dentro del rango solicitado
+    private void buscarPorRango(NodoB nodo, T inicio, T fin, ListaEnlazada<T> resultados) {
+        // Si el nodo no existe, termina
+        if (nodo == null) {
+            return;
+        }
+
+        int i;
+
+        // Recorre todas las claves del nodo actual
+        for (i = 0; i < nodo.numeroClaves; i++) {
+            // Primero recorre el hijo izquierdo
+            if (!nodo.esHoja) {
+                buscarPorRango(nodo.hijos[i],inicio, fin,resultados);
+            }
+
+            T actual = nodo.claves[i];
+
+            // Verifica si la clave está dentro del rango
+            if (actual.compareTo(inicio) >= 0 && actual.compareTo(fin) <= 0) {
+                resultados.insertarAlFinal(actual);
+            }
+        }
+
+        // Finalmente recorre el último hijo
+        if (!nodo.esHoja) {
+            buscarPorRango(nodo.hijos[i],inicio, fin,resultados);
+        }
     }
 }

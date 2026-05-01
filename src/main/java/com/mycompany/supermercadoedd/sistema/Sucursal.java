@@ -15,7 +15,6 @@ public class Sucursal {
     private int id;
     private String nombre;
     private String ubicacion;
-
     private int tiempoIngreso;
     private int tiempoTraspaso;
     private int tiempoDespacho;
@@ -24,17 +23,14 @@ public class Sucursal {
     private ListaEnlazada<Producto> inventario;
     private ArbolAVL<Producto> arbolAVL;
     private TablaHash<String, Producto> tablaHash;
-    private ArbolB<Producto> arbolB;
+    private ArbolB<String> arbolB;
     private ArbolBPlus<Producto> arbolBPlus;
     
     // Guarda el historial de operaciones para deshacer cambios posteriores
     private Pila<OperacionRollback> historialCambios;
 
     // Inicializa una nueva sucursal
-    public Sucursal(int id, String nombre, String ubicacion,
-                     int tiempoIngreso, int tiempoTraspaso,
-                     int tiempoDespacho) {
-
+    public Sucursal(int id, String nombre, String ubicacion,int tiempoIngreso, int tiempoTraspaso,int tiempoDespacho) {
         this.id = id;
         this.nombre = nombre;
         this.ubicacion = ubicacion;
@@ -61,12 +57,7 @@ public class Sucursal {
             inventario.insertarAlFinal(producto);
 
             pilaRollback.apilar(
-                    new OperacionRollback(
-                            id,
-                            producto,
-                            "LISTA"
-                    )
-            );
+                    new OperacionRollback(id,producto, "LISTA"));
 
             // Inserta en AVL
             arbolAVL.insertar(producto);
@@ -74,16 +65,13 @@ public class Sucursal {
             pilaRollback.apilar(new OperacionRollback(id, producto,"AVL"));
 
             // Inserta en tabla hash
-            tablaHash.insertar(
-                    producto.getCodigoBarras(),
-                    producto
-            );
+            tablaHash.insertar(producto.getCodigoBarras(), producto);
 
             pilaRollback.apilar(
                     new OperacionRollback(id,producto,"HASH"));
 
             // Inserta en Árbol B
-            arbolB.insertar(producto);
+            arbolB.insertar(producto.getFechaCaducidad());
 
             pilaRollback.apilar(
                     new OperacionRollback(id, producto,"ARBOL_B"));
@@ -91,17 +79,14 @@ public class Sucursal {
             // Inserta en Árbol B+
             arbolBPlus.insertar(producto);
 
-            pilaRollback.apilar(
-                    new OperacionRollback(id, producto,"ARBOL_B_PLUS") );
+            pilaRollback.apilar( new OperacionRollback(id, producto,"ARBOL_B_PLUS") );
             
             // Registra la operación para permitir deshacer posteriormente
-            historialCambios.apilar(
-                    new OperacionRollback(id, producto,"AGREGAR_PRODUCTO"));
+            historialCambios.apilar(new OperacionRollback(id, producto,"AGREGAR_PRODUCTO"));
 
             return true; // Si todo salió bien
 
         } catch (Exception e) {
-
             realizarRollback(pilaRollback); // Si algo falla, revierte todo
             return false;
         }   
@@ -112,11 +97,8 @@ public class Sucursal {
             Pila<OperacionRollback> pilaRollback) {
 
         while (!pilaRollback.estaVacia()) {
-
             OperacionRollback operacion = pilaRollback.desapilar();
-
             String estructura = operacion.getEstructura();
-
             Producto producto = operacion.getProducto();
 
             // Se deshace según la estructura afectada
@@ -137,7 +119,7 @@ public class Sucursal {
                     break;
 
                 case "ARBOL_B":
-                    arbolB.eliminar(producto);
+                    arbolB.eliminar(producto.getFechaCaducidad());
                     break;
 
                 case "ARBOL_B_PLUS":
@@ -155,27 +137,23 @@ public class Sucursal {
         }
 
         OperacionRollback operacion = historialCambios.desapilar();
-
         Producto producto = operacion.getProducto();
-
         String tipoOperacion = operacion.getEstructura();
 
         switch (tipoOperacion) {
 
             case "AGREGAR_PRODUCTO":
-
                 // Elimina el producto de todas las estructuras
                 inventario.eliminar(producto);
                 arbolAVL.eliminar(producto);
                 tablaHash.eliminar(producto.getCodigoBarras());
-                arbolB.eliminar(producto);
+                arbolB.eliminar(producto.getFechaCaducidad());
                 arbolBPlus.eliminar(producto);
 
                 return true;
                 
             case "ELIMINAR_PRODUCTO":
-                // Si se deshace una eliminación,
-                // se vuelve a insertar en todas las estructuras
+                // Si se deshace una eliminación, se vuelve a insertar en todas las estructuras
                 agregarProducto(producto);
 
                 return true;
@@ -242,8 +220,7 @@ public class Sucursal {
         return true;
     }
 
-    // Aumenta el stock de un producto existente.
-    // Si no existe, retorna false.
+    // Aumenta el stock de un producto existente. Si no existe, retorna false.
     public boolean aumentarStock(String codigoBarras, int cantidad) {
         Producto producto = buscarProductoPorCodigo(codigoBarras);
 
@@ -277,18 +254,15 @@ public class Sucursal {
             arbolAVL.eliminar(producto);
 
             // Se elimina de la tabla hash
-            tablaHash.eliminar(
-                    producto.getCodigoBarras()
-            );
+            tablaHash.eliminar( producto.getCodigoBarras());
 
             // Se elimina del Árbol B
-            arbolB.eliminar(producto);
+            arbolB.eliminar(producto.getFechaCaducidad());
 
             // Se elimina del Árbol B+
             arbolBPlus.eliminar(producto);
 
-            // Se registra en historial para permitir
-            // futuras operaciones de deshacer
+            // Se registra en historial
             historialCambios.apilar(new OperacionRollback(id,producto,"ELIMINAR_PRODUCTO" ));
             return true;
 
@@ -316,7 +290,38 @@ public class Sucursal {
                 return actual;
             }
         }
-
         return null;
+    }
+    
+    // Busca todos los productos cuya fecha de caducidad esté dentro del rango indicado.
+    public ListaEnlazada<Producto> buscarProductosPorRangoFecha(String fechaInicio, String fechaFin) {
+        // Lista final con los productos encontrados
+        ListaEnlazada<Producto> resultados = new ListaEnlazada<>();
+
+        // El Árbol B devuelve todas las fechas que están dentro del rango solicitado
+        ListaEnlazada<String> fechasValidas = arbolB.buscarPorRango(fechaInicio,fechaFin);
+
+        // Si no hay fechas encontradas, retorna vacío
+        if (fechasValidas.obtenerTamanio() == 0) {
+            return resultados;
+        }
+
+        // Recorre todo el inventario real
+        for (int i = 0; i < inventario.obtenerTamanio(); i++) {
+            Producto producto = inventario.obtener(i);
+
+            String fechaProducto = producto.getFechaCaducidad();
+
+            // Verifica si la fecha del producto coincide con alguna fecha encontrada
+            for (int j = 0; j < fechasValidas.obtenerTamanio(); j++) {
+                String fechaValida = fechasValidas.obtener(j);
+
+                if (fechaProducto.equals(fechaValida)) {
+                    resultados.insertarAlFinal(producto);
+                    break;
+                }
+            }
+        }
+        return resultados;
     }
 }
