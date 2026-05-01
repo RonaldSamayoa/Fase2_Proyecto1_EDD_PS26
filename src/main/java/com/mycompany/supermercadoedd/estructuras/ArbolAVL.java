@@ -279,4 +279,22 @@ public class ArbolAVL <T extends Comparable<T>> {
     public boolean estaVacio() {
         return raiz == null;
     }
+    
+    // Retorna todos los elementos en orden (alfabético en este caso)
+    public ListaEnlazada<T> obtenerElementosEnOrden() {
+        ListaEnlazada<T> lista = new ListaEnlazada<>();
+        llenarInOrden(raiz, lista);
+        return lista;
+    }
+
+    // Recorre el árbol en inorden y guarda los elementos en la lista
+    private void llenarInOrden(Nodo nodo, ListaEnlazada<T> lista) {
+        if (nodo != null) {
+            llenarInOrden(nodo.izquierdo, lista);
+
+            lista.insertarAlFinal(nodo.dato);
+
+            llenarInOrden(nodo.derecho, lista);
+        }
+    }
 }

@@ -353,4 +353,9 @@ public class Sucursal {
 
         return resultados;
     }
+    
+    // Retorna todos los productos ordenados por nombre usando AVL + recorrido InOrder
+    public ListaEnlazada<Producto> obtenerProductosOrdenadosPorNombre() {
+        return arbolAVL.obtenerElementosEnOrden();
+    }
 }
