@@ -297,4 +297,26 @@ public class Sucursal {
             return false;
         }
     }
+    
+    // Busca un producto por nombre usando el AVL como validación principal, se usa después la lista enlazada para recuperar el objeto completo.
+    public Producto buscarProductoPorNombre(String nombre) {
+        // Se crea un producto temporal únicamente para realizar la comparación dentro del AVL.
+        Producto temporal = new Producto( nombre,"","","", "", 0, 0);
+
+        // Si el AVL indica que no existe, se termina inmediatamente
+        if (!arbolAVL.contiene(temporal)) {
+            return null;
+        }
+
+        // Si existe en AVL, se recorre inventario para obtener el objeto real completo
+        for (int i = 0; i < inventario.obtenerTamanio(); i++) {
+            Producto actual = inventario.obtener(i);
+
+            if (actual.getNombre().equalsIgnoreCase(nombre)) {
+                return actual;
+            }
+        }
+
+        return null;
+    }
 }

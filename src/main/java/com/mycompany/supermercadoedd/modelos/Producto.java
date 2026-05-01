@@ -91,11 +91,9 @@ public class Producto implements Comparable<Producto> {
         this.stock = stock;
     }
 
-    // Compara productos usando código de barras
-    // Se utiliza como clave principal por estabilidad
     @Override
     public int compareTo(Producto otro) {
-        return this.codigoBarras.compareTo(otro.codigoBarras);
+        return this.nombre.compareToIgnoreCase(otro.nombre);
     }
 
     // Convierte el objeto a texto para mostrar información

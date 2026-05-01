@@ -1,5 +1,4 @@
 package com.mycompany.supermercadoedd.sistema;
-
 import com.mycompany.supermercadoedd.estructuras.ListaEnlazada;
 import com.mycompany.supermercadoedd.modelos.Producto;
 
@@ -101,8 +100,7 @@ public class SistemaSupermercado {
         }
 
         // Calcula la ruta mínima usando Dijkstra
-        int distancia =
-                grafo.dijkstra(idOrigen,idDestino);
+        int distancia = grafo.dijkstra(idOrigen,idDestino);
 
         // Si no existe ruta posible, falla
         if (distancia == -1) {
@@ -110,8 +108,7 @@ public class SistemaSupermercado {
         }
 
         // Descuenta stock en origen
-        boolean descuento =
-                origen.disminuirStock(codigoBarras,cantidad);
+        boolean descuento = origen.disminuirStock(codigoBarras,cantidad);
 
         if (!descuento) {
             return false;
@@ -154,8 +151,25 @@ public class SistemaSupermercado {
         }
 
         // Delega la eliminación a la sucursal
-        return sucursal.eliminarProducto(
-                codigoBarras
-        );
+        return sucursal.eliminarProducto(codigoBarras);
+    }
+    
+    public Producto buscarProductoPorNombre(String nombre) {
+        // Recorre todas las sucursales registradas
+        for (int i = 0; i < sucursales.obtenerTamanio(); i++) {
+
+            Sucursal sucursal = sucursales.obtener(i);
+
+            // Busca dentro de esa sucursal
+            Producto producto = sucursal.buscarProductoPorNombre(nombre);
+
+            // Si se encuentra, se retorna inmediatamente
+            if (producto != null) {
+                return producto;
+            }
+        }
+
+        // Si no existe en ninguna sucursal
+        return null;
     }
 }
