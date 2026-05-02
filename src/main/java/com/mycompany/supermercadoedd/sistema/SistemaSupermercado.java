@@ -68,64 +68,73 @@ public class SistemaSupermercado {
         return sucursales;
     }
     
-    // Traslada cierta cantidad de un producto
-    // desde una sucursal origen hacia una sucursal destino
-    public boolean trasladarProducto(int idOrigen, int idDestino,String codigoBarras, int cantidad) {
-
-        // Busca ambas sucursales
+    // Traslada cierta cantidad de un producto desde una sucursal origen hacia una sucursal destino
+    public boolean trasladarProducto(int idOrigen, int idDestino, String codigoBarras, int cantidad) {
         Sucursal origen = buscarSucursalPorId(idOrigen);
         Sucursal destino = buscarSucursalPorId(idDestino);
 
-        // Si alguna no existe, falla
         if (origen == null || destino == null) {
             return false;
         }
 
-        // Busca el producto en la sucursal origen
         Producto productoOrigen = origen.buscarProductoPorCodigo(codigoBarras);
 
-        // Si no existe, falla
         if (productoOrigen == null) {
             return false;
         }
 
-        // Verifica stock suficiente
         if (productoOrigen.getStock() < cantidad) {
             return false;
         }
 
-        // Calcula la ruta mínima usando Dijkstra
-        int distancia = grafo.dijkstra(idOrigen,idDestino);
+        int distancia = grafo.dijkstra(idOrigen, idDestino);
 
-        // Si no existe ruta posible, falla
         if (distancia == -1) {
             return false;
         }
 
-        // Descuenta stock en origen
-        boolean descuento = origen.disminuirStock(codigoBarras,cantidad);
+        boolean descuento = origen.disminuirStock(codigoBarras, cantidad);
 
         if (!descuento) {
             return false;
         }
 
-        // Intenta aumentar en destino
-        boolean aumento = destino.aumentarStock(codigoBarras,cantidad);
+        // Se crea copia del producto para traslado
+        Producto productoTraslado = new Producto(productoOrigen.getNombre(), productoOrigen.getCodigoBarras(),
+                        productoOrigen.getCategoria(), productoOrigen.getFechaCaducidad(),  productoOrigen.getMarca(),  productoOrigen.getPrecio(), cantidad);
 
-        // Si no existe el producto en destino, se crea una copia e inserta
+        // 1. entra a cola de salida en origen
+        origen.encolarSalida(productoTraslado);
+
+        // 2. sale de origen
+        origen.procesarSalida();
+
+        // 3. llega a destino
+        destino.encolarIngreso(productoTraslado);
+
+        // 4. destino procesa ingreso
+        destino.procesarIngreso();
+
+        // 5. si ya existe producto, aumenta stock
+        boolean aumento = destino.aumentarStock(codigoBarras, cantidad);
+
+        // 6. si no existe, se agrega completo
         if (!aumento) {
-            Producto nuevoProducto =
-                    new Producto(
-                            productoOrigen.getNombre(),productoOrigen.getCodigoBarras(), productoOrigen.getCategoria(),
-                            productoOrigen.getFechaCaducidad(), productoOrigen.getMarca(), productoOrigen.getPrecio(),
-                            cantidad);
-            destino.agregarProducto(nuevoProducto);
+            destino.agregarProducto(productoTraslado);
         }
 
-        System.out.println("Traslado realizado correctamente. " +
-                "Tiempo mínimo estimado: " + distancia
-        );
+        System.out.println("Traslado realizado correctamente.\n" + "Ruta mínima calculada.\n"
+                + "Tiempo estimado: " + distancia);
         return true;
+    }
+    
+    public String mostrarColasSucursal(int idSucursal) {
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        if (sucursal == null) {
+            return "Sucursal no encontrada.";
+        }
+        return sucursal.mostrarEstadoColas();
     }
     
     // Elimina un producto de una sucursal específica usando su código de barras
@@ -144,7 +153,6 @@ public class SistemaSupermercado {
     public Producto buscarProductoPorNombre(String nombre) {
         // Recorre todas las sucursales registradas
         for (int i = 0; i < sucursales.obtenerTamanio(); i++) {
-
             Sucursal sucursal = sucursales.obtener(i);
 
             // Busca dentro de esa sucursal
@@ -175,19 +183,15 @@ public class SistemaSupermercado {
     // Busca productos por categoría dentro de una sucursal específica
     public ListaEnlazada<Producto> buscarProductosPorCategoria(int idSucursal, String categoria) {
         // Se busca primero la sucursal correspondiente
-        Sucursal sucursal =
-                buscarSucursalPorId(idSucursal);
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
 
-        // Si la sucursal no existe,
-        // se retorna una lista vacía
+        // Si la sucursal no existe, se retorna una lista vacía
         if (sucursal == null) {
             return new ListaEnlazada<>();
         }
 
         // Se delega la búsqueda a la sucursal
-        return sucursal.buscarProductosPorCategoria(
-                categoria
-        );
+        return sucursal.buscarProductosPorCategoria(categoria);
     }
 
     // Lista todos los productos de una sucursal ordenados por nombre
@@ -198,7 +202,6 @@ public class SistemaSupermercado {
         if (sucursal == null) {
             return new ListaEnlazada<>();
         }
-
         return sucursal.obtenerProductosOrdenadosPorNombre();
     }
     
@@ -209,9 +212,7 @@ public class SistemaSupermercado {
         if (sucursal == null) {
             return "La sucursal no existe.";
         }
-
         ComparadorBusquedas comparador = new ComparadorBusquedas();
-
         return comparador.compararBusquedaPorNombre(sucursal,nombreProducto );
     }
     
@@ -224,11 +225,7 @@ public class SistemaSupermercado {
         }
 
         ComparadorBusquedas comparador = new ComparadorBusquedas();
-
-        return comparador.compararBusquedaPorCodigo(
-                sucursal,
-                codigoBarras
-        );
+        return comparador.compararBusquedaPorCodigo(sucursal,codigoBarras);
     }
     
     // Busca coincidencias parciales dentro de una sucursal

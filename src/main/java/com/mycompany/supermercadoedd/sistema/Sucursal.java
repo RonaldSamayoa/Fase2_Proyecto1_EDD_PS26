@@ -4,6 +4,7 @@ import com.mycompany.supermercadoedd.estructuras.ArbolB;
 import com.mycompany.supermercadoedd.estructuras.ArbolBPlus;
 import com.mycompany.supermercadoedd.estructuras.ListaEnlazada;
 import com.mycompany.supermercadoedd.estructuras.Pila;
+import com.mycompany.supermercadoedd.estructuras.Cola;
 import com.mycompany.supermercadoedd.estructuras.TablaHash;
 import com.mycompany.supermercadoedd.modelos.Producto;
 /**
@@ -25,9 +26,10 @@ public class Sucursal {
     private TablaHash<String, Producto> tablaHash;
     private ArbolB<String> arbolB;
     private ArbolBPlus<String> arbolBPlus;
-    
-    // Guarda el historial de operaciones para deshacer cambios posteriores
     private Pila<OperacionRollback> historialCambios;
+    private Cola<Producto> colaIngreso;
+    private Cola<Producto> colaPreparacionTraspaso;
+    private Cola<Producto> colaSalida;
 
     // Inicializa una nueva sucursal
     public Sucursal(int id, String nombre, String ubicacion,int tiempoIngreso, int tiempoTraspaso,int tiempoDespacho) {
@@ -44,7 +46,10 @@ public class Sucursal {
         tablaHash = new TablaHash<>();
         arbolB = new ArbolB<>();
         arbolBPlus = new ArbolBPlus<>();
-        historialCambios = new Pila<>(); // Inicializa la pila de historial de cambios
+        historialCambios = new Pila<>();
+        colaIngreso = new Cola<>();
+        colaPreparacionTraspaso = new Cola<>();
+        colaSalida = new Cola<>();
     }
 
     // Inserta un producto en todas las estructuras
@@ -461,5 +466,74 @@ public class Sucursal {
             }
         }
         return resultados;
+    }
+    
+    // Ingresa un producto recién recibido a la cola de ingreso
+    public void encolarIngreso(Producto producto) {
+        colaIngreso.encolar(producto);
+    }
+
+    // Si la sucursal es intermedia, pasa a preparación de traspaso
+    public void encolarPreparacion(Producto producto) {
+        colaPreparacionTraspaso.encolar(producto);
+    }
+
+    // Cuando ya está listo para enviarse
+    public void encolarSalida(Producto producto) {
+        colaSalida.encolar(producto);
+    }
+
+    // Procesa un producto recibido en cola de ingreso
+    public Producto procesarIngreso() {
+        if (colaIngreso.estaVacia()) {
+            return null;
+        }
+        return colaIngreso.desencolar();
+    }
+
+    // Procesa preparación de traspaso
+    public Producto procesarPreparacion() {
+        if (colaPreparacionTraspaso.estaVacia()) {
+            return null;
+        }
+
+        Producto producto = colaPreparacionTraspaso.desencolar();
+        // luego pasa a salida
+        colaSalida.encolar(producto);
+        return producto;
+    }
+
+    // Procesa salida final
+    public Producto procesarSalida() {
+        if (colaSalida.estaVacia()) {
+            return null;
+        }
+        return colaSalida.desencolar();
+    }
+
+    // Permite visualizar estado actual de colas
+    public String mostrarEstadoColas() {
+        String reporte = "";
+        reporte += "\n=== COLAS DE SUCURSAL ===\n";
+        reporte += "Sucursal: " + nombre + "\n";
+        reporte += "Cola ingreso: "
+                + colaIngreso.toString() + "\n";
+        reporte += "Cola preparación: "
+                + colaPreparacionTraspaso.toString() + "\n";
+        reporte += "Cola salida: "
+                + colaSalida.toString() + "\n";
+        return reporte;
+    }
+    
+    public Cola<Producto> getColaIngreso() {
+        return colaIngreso;
+    }
+
+    public Cola<Producto> getColaPreparacionTraspaso() {
+        return colaPreparacionTraspaso;
+    }
+
+    public Cola<Producto> getColaSalida() {
+        return colaSalida;
     }
 }
