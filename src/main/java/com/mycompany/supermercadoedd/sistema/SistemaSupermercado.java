@@ -12,6 +12,7 @@ public class SistemaSupermercado {
     private ListaEnlazada<Sucursal> sucursales;
     private GrafoSucursales grafo;
     private GestorDespacho gestorDespacho;
+    private GestorDevoluciones gestorDevoluciones;
 
     // Inicializa el sistema principal
     public SistemaSupermercado() {
@@ -21,6 +22,7 @@ public class SistemaSupermercado {
         // Se inicializa el grafo de conexiones
         grafo = new GrafoSucursales();
         gestorDespacho = new GestorDespacho();
+        gestorDevoluciones = new GestorDevoluciones();
     }
 
     // Registra una nueva sucursal en el sistema
@@ -279,5 +281,17 @@ public class SistemaSupermercado {
             reporte += "Ambos criterios presentan "+ "el mismo valor.\n";
         }
         return reporte;
+    }
+    
+    public boolean devolverProducto(int idSucursal, String codigoBarras, int cantidad) {
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si no existe, falla inmediatamente
+        if (sucursal == null) {
+            return false;
+        }
+
+        // Se delega el proceso al gestor especializado
+        return gestorDevoluciones.devolverProducto(sucursal, codigoBarras,cantidad);
     }
 }
