@@ -202,6 +202,49 @@ public class SistemaSupermercado {
         return sucursal.obtenerProductosOrdenadosPorNombre();
     }
     
+    // Lista enlazada vs AVL
+    public String compararBusquedaPorNombre(int idSucursal, String nombreProducto) {
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        if (sucursal == null) {
+            return "La sucursal no existe.";
+        }
+
+        ComparadorBusquedas comparador = new ComparadorBusquedas();
+
+        return comparador.compararBusquedaPorNombre(sucursal,nombreProducto );
+    }
+    
+    // Lista enlazada vs Hash
+    public String compararBusquedaPorCodigo(int idSucursal, String codigoBarras) {
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        if (sucursal == null) {
+            return "La sucursal no existe.";
+        }
+
+        ComparadorBusquedas comparador = new ComparadorBusquedas();
+
+        return comparador.compararBusquedaPorCodigo(
+                sucursal,
+                codigoBarras
+        );
+    }
+    
+    // Busca coincidencias parciales dentro de una sucursal
+    public ListaEnlazada<Producto> buscarCoincidenciasParciales(int idSucursal, String textoBusqueda) {
+        // Busca la sucursal
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si no existe, retorna lista vacía
+        if (sucursal == null) {
+            return new ListaEnlazada<>();
+        }
+
+        // Delega la búsqueda
+        return sucursal.buscarCoincidenciasParciales(textoBusqueda);
+    }
+    
     // Lista todos los productos de una sucursal ordenados por fecha de caducidad
     public ListaEnlazada<Producto> listarProductosOrdenadosPorFecha(int idSucursal) {
         Sucursal sucursal = buscarSucursalPorId(idSucursal);

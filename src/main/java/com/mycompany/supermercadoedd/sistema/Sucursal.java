@@ -293,6 +293,32 @@ public class Sucursal {
         return null;
     }
     
+    // Busca un producto de forma secuencial recorriendo únicamente la lista enlazada
+    public Producto buscarProductoSecuencialPorNombre(String nombre) {
+        for (int i = 0; i < inventario.obtenerTamanio(); i++) {
+
+            Producto actual =  inventario.obtener(i);
+
+            if (actual.getNombre().equalsIgnoreCase(nombre)) {
+                return actual;
+            }
+        }
+
+        return null;
+    }
+    
+    public Producto buscarProductoSecuencialPorCodigo(String codigoBarras) {
+        for (int i = 0; i < inventario.obtenerTamanio(); i++) {
+
+            Producto actual = inventario.obtener(i);
+
+            if (actual.getCodigoBarras().equalsIgnoreCase(codigoBarras)) {
+                return actual;
+            }
+        }
+        return null;
+    }
+
     // Busca todos los productos cuya fecha de caducidad esté dentro del rango indicado.
     public ListaEnlazada<Producto> buscarProductosPorRangoFecha(String fechaInicio, String fechaFin) {
         // Lista final con los productos encontrados
@@ -413,6 +439,25 @@ public class Sucursal {
                 if (producto.getCategoria().equalsIgnoreCase(categoriaActual)) {
                     resultados.insertarAlFinal(producto);
                 }
+            }
+        }
+        return resultados;
+    }
+    
+    // Busca productos por coincidencia parcial en el nombre
+    public ListaEnlazada<Producto> buscarCoincidenciasParciales(String texto) {
+        ListaEnlazada<Producto> resultados = new ListaEnlazada<>();
+
+        // Normaliza texto a minúsculas
+        String textoBusqueda = texto.toLowerCase();
+        for (int i = 0; i < inventario.obtenerTamanio(); i++) {
+
+            Producto producto = inventario.obtener(i);
+            String nombreProducto = producto.getNombre().toLowerCase();
+
+            // Verifica coincidencia parcial
+            if (nombreProducto.contains(textoBusqueda)) {
+                resultados.insertarAlFinal(producto);
             }
         }
         return resultados;
