@@ -223,4 +223,21 @@ public class SistemaSupermercado {
         }
         return sucursal.obtenerProductosOrdenadosPorCategoria();
     }
+    
+    // Compara los tiempos de los distintos métodos de ordenamiento en una sucursal específica
+    public String compararOrdenamientosSucursal(int idSucursal) {
+        // Busca la sucursal
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si no existe, se reporta
+        if (sucursal == null) {
+            return "La sucursal no existe.";
+        }
+
+        // Se crea el comparador
+        ComparadorOrdenamientos comparador = new ComparadorOrdenamientos();
+
+        // Se delega la comparación
+        return comparador.compararOrdenamientos(sucursal);
+    }
 }
