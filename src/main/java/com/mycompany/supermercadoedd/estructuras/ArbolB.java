@@ -109,6 +109,35 @@ public class ArbolB<T extends Comparable<T>> {
             recorrido(nodo.hijos[i]);
         }
     }
+    
+    public ListaEnlazada<T> obtenerElementosEnOrden() {
+        ListaEnlazada<T> lista = new ListaEnlazada<>();
+        llenarEnOrden(raiz, lista);
+        return lista;
+    }
+
+    private void llenarEnOrden(NodoB nodo, ListaEnlazada<T> lista) {
+        if (nodo == null) {
+            return;
+        }
+
+        int i;
+
+        for (i = 0; i < nodo.numeroClaves; i++) {
+            // Primero hijo izquierdo
+            if (!nodo.esHoja) {
+                llenarEnOrden(nodo.hijos[i], lista);
+            }
+
+            // Luego clave actual
+            lista.insertarAlFinal(nodo.claves[i]);
+        }
+
+        // Finalmente último hijo
+        if (!nodo.esHoja) {
+            llenarEnOrden(nodo.hijos[i], lista);
+        }
+    }
 
     // Muestra visualmente la estructura del árbol
     public void mostrarEstructura() {

@@ -358,4 +358,34 @@ public class Sucursal {
     public ListaEnlazada<Producto> obtenerProductosOrdenadosPorNombre() {
         return arbolAVL.obtenerElementosEnOrden();
     }
+    
+    // Retorna todos los productos ordenados por fecha de caducidad usando Árbol B
+    public ListaEnlazada<Producto> obtenerProductosOrdenadosPorFecha() {
+        // Lista final con productos completos
+        ListaEnlazada<Producto> resultados = new ListaEnlazada<>();
+
+        // El Árbol B devuelve las fechas ya ordenadas
+        ListaEnlazada<String> fechasOrdenadas = arbolB.obtenerElementosEnOrden();
+
+        // Si no hay fechas, retorna vacío
+        if (fechasOrdenadas.obtenerTamanio() == 0) {
+            return resultados;
+        }
+
+        // Recorre cada fecha en orden
+        for (int i = 0; i < fechasOrdenadas.obtenerTamanio(); i++) {
+
+            String fechaActual = fechasOrdenadas.obtener(i);
+
+            // Busca en inventario los productos con esa fecha
+            for (int j = 0; j < inventario.obtenerTamanio(); j++) {
+                Producto producto = inventario.obtener(j);
+
+                if (producto.getFechaCaducidad().equals(fechaActual)) {
+                    resultados.insertarAlFinal(producto);
+                }
+            }
+        }
+        return resultados;
+    }
 }

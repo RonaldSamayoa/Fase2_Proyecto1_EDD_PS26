@@ -201,4 +201,15 @@ public class SistemaSupermercado {
 
         return sucursal.obtenerProductosOrdenadosPorNombre();
     }
+    
+    // Lista todos los productos de una sucursal ordenados por fecha de caducidad
+    public ListaEnlazada<Producto> listarProductosOrdenadosPorFecha(int idSucursal) {
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si no existe la sucursal, retorna vacío
+        if (sucursal == null) {
+            return new ListaEnlazada<>();
+        }
+        return sucursal.obtenerProductosOrdenadosPorFecha();
+    }
 }
