@@ -388,4 +388,33 @@ public class Sucursal {
         }
         return resultados;
     }
+    // Retorna todos los productos ordenados por categoría usando Árbol B+
+    public ListaEnlazada<Producto> obtenerProductosOrdenadosPorCategoria() {
+        ListaEnlazada<Producto> resultados = new ListaEnlazada<>();
+
+        // El Árbol B+ devuelve categorías ordenadas
+        ListaEnlazada<String> categoriasOrdenadas =  arbolBPlus.obtenerElementosEnOrden();
+
+        // Si no hay categorías, retorna vacío
+        if (categoriasOrdenadas.obtenerTamanio() == 0) {
+            return resultados;
+        }
+
+        // Recorre cada categoría en orden
+        for (int i = 0; i < categoriasOrdenadas.obtenerTamanio(); i++) {
+
+            String categoriaActual = categoriasOrdenadas.obtener(i);
+
+            // Busca productos reales en inventario
+            for (int j = 0; j < inventario.obtenerTamanio(); j++) {
+
+                Producto producto = inventario.obtener(j);
+
+                if (producto.getCategoria().equalsIgnoreCase(categoriaActual)) {
+                    resultados.insertarAlFinal(producto);
+                }
+            }
+        }
+        return resultados;
+    }
 }

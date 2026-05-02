@@ -115,6 +115,27 @@ public class ArbolBPlus<T extends Comparable<T>> {
         System.out.println("null");
     }
     
+    public ListaEnlazada<T> obtenerElementosEnOrden() {
+        ListaEnlazada<T> lista = new ListaEnlazada<>();
+
+        NodoBPlus actual = raiz;
+
+        // Baja hasta la hoja más izquierda
+        while (!actual.esHoja) {
+            actual = actual.hijos[0];
+        }
+
+        // Recorre todas las hojas enlazadas
+        while (actual != null) {
+
+            for (int i = 0; i < actual.numeroClaves; i++) {
+                lista.insertarAlFinal(actual.claves[i]);
+            }
+            actual = actual.siguiente;
+        }
+        return lista;
+    }
+    
         // Inserta una nueva clave en el Árbol B+
     public void insertar(T clave) {
 

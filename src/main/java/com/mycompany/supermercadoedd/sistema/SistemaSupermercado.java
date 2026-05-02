@@ -212,4 +212,15 @@ public class SistemaSupermercado {
         }
         return sucursal.obtenerProductosOrdenadosPorFecha();
     }
+    
+    // Lista todos los productos de una sucursal ordenados por categoría
+    public ListaEnlazada<Producto> listarProductosOrdenadosPorCategoria(int idSucursal) {
+        Sucursal sucursal = buscarSucursalPorId(idSucursal);
+
+        // Si no existe la sucursal, retorna vacío
+        if (sucursal == null) {
+            return new ListaEnlazada<>();
+        }
+        return sucursal.obtenerProductosOrdenadosPorCategoria();
+    }
 }
