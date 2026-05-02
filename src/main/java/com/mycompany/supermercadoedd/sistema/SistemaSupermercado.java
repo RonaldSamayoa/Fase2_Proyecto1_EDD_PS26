@@ -11,6 +11,7 @@ public class SistemaSupermercado {
     // Almacena todas las sucursales registradas
     private ListaEnlazada<Sucursal> sucursales;
     private GrafoSucursales grafo;
+    private GestorDespacho gestorDespacho;
 
     // Inicializa el sistema principal
     public SistemaSupermercado() {
@@ -19,6 +20,7 @@ public class SistemaSupermercado {
         
         // Se inicializa el grafo de conexiones
         grafo = new GrafoSucursales();
+        gestorDespacho = new GestorDespacho();
     }
 
     // Registra una nueva sucursal en el sistema
@@ -77,55 +79,13 @@ public class SistemaSupermercado {
             return false;
         }
 
-        Producto productoOrigen = origen.buscarProductoPorCodigo(codigoBarras);
-
-        if (productoOrigen == null) {
-            return false;
-        }
-
-        if (productoOrigen.getStock() < cantidad) {
-            return false;
-        }
-
-        int distancia = grafo.dijkstra(idOrigen, idDestino);
+        int distancia = grafo.dijkstra(idOrigen,idDestino);
 
         if (distancia == -1) {
             return false;
         }
 
-        boolean descuento = origen.disminuirStock(codigoBarras, cantidad);
-
-        if (!descuento) {
-            return false;
-        }
-
-        // Se crea copia del producto para traslado
-        Producto productoTraslado = new Producto(productoOrigen.getNombre(), productoOrigen.getCodigoBarras(),
-                        productoOrigen.getCategoria(), productoOrigen.getFechaCaducidad(),  productoOrigen.getMarca(),  productoOrigen.getPrecio(), cantidad);
-
-        // 1. entra a cola de salida en origen
-        origen.encolarSalida(productoTraslado);
-
-        // 2. sale de origen
-        origen.procesarSalida();
-
-        // 3. llega a destino
-        destino.encolarIngreso(productoTraslado);
-
-        // 4. destino procesa ingreso
-        destino.procesarIngreso();
-
-        // 5. si ya existe producto, aumenta stock
-        boolean aumento = destino.aumentarStock(codigoBarras, cantidad);
-
-        // 6. si no existe, se agrega completo
-        if (!aumento) {
-            destino.agregarProducto(productoTraslado);
-        }
-
-        System.out.println("Traslado realizado correctamente.\n" + "Ruta mínima calculada.\n"
-                + "Tiempo estimado: " + distancia);
-        return true;
+        return gestorDespacho.trasladarProducto(origen,destino, codigoBarras, cantidad, distancia);
     }
     
     public String mostrarColasSucursal(int idSucursal) {
