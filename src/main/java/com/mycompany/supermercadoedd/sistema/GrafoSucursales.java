@@ -66,37 +66,28 @@ public class GrafoSucursales {
     }
 
     // Crea una conexión entre dos sucursales
-    public void agregarConexion(int idOrigen,
-                                int idDestino,
-                                int peso) {
-
-        // Se obtiene la posición real de ambas sucursales
+    public void agregarConexion(int idOrigen,int idDestino, int tiempo, int costo) {
         int indiceOrigen = buscarIndiceSucursal(idOrigen);
+
         int indiceDestino = buscarIndiceSucursal(idDestino);
 
-        // Si alguna no existe, no se puede crear conexión
         if (indiceOrigen == -1 || indiceDestino == -1) {
             return;
         }
 
-        // Se obtiene la sucursal destino
         Sucursal destino = sucursales.obtener(indiceDestino);
+
         Sucursal origen = sucursales.obtener(indiceOrigen);
 
-            // conexión origen → destino
-            conexiones[indiceOrigen].insertarAlFinal(
-                    new ConexionSucursal(destino, peso)
-            );
+        conexiones[indiceOrigen].insertarAlFinal(
+                new ConexionSucursal(destino, tiempo, costo) );
 
-            // conexión destino → origen
-            conexiones[indiceDestino].insertarAlFinal(
-                    new ConexionSucursal(origen, peso)
-            );
+        conexiones[indiceDestino].insertarAlFinal(
+                new ConexionSucursal(origen, tiempo,costo));
     }
 
     // Busca la posición real de una sucursal usando su ID
     private int buscarIndiceSucursal(int idSucursal) {
-
         // Recorre toda la lista principal
         for (int i = 0; i < sucursales.obtenerTamanio(); i++) {
 
@@ -113,7 +104,6 @@ public class GrafoSucursales {
     // Expande el arreglo cuando se llena
     @SuppressWarnings("unchecked")
     private void expandirCapacidad() {
-
         // Se duplica la capacidad actual
         int nuevaCapacidad = capacidad * 2;
 
@@ -140,35 +130,26 @@ public class GrafoSucursales {
 
     // Muestra visualmente todo el grafo
     public void mostrarGrafo() {
-
         // Recorre todas las sucursales registradas
         for (int i = 0; i < cantidadSucursales; i++) {
 
             Sucursal origen = sucursales.obtener(i);
 
             System.out.print(
-                    origen.getNombre() + " -> "
-            );
+                    origen.getNombre() + " -> "  );
 
             // Obtiene las conexiones de esa sucursal
-            ListaEnlazada<ConexionSucursal> lista =
-                    conexiones[i];
+            ListaEnlazada<ConexionSucursal> lista = conexiones[i];
 
             // Recorre todas las conexiones existentes
             for (int j = 0; j < lista.obtenerTamanio(); j++) {
 
-                ConexionSucursal conexion =
-                        lista.obtener(j);
+                ConexionSucursal conexion = lista.obtener(j);
 
                 System.out.print(
-                        "[" +
-                        conexion.getDestino().getNombre() +
-                        ", peso=" +
-                        conexion.getPeso() +
-                        "] "
-                );
+                        "[" + conexion.getDestino().getNombre() +
+                        "] ");
             }
-
             System.out.println();
         }
     }
@@ -179,75 +160,58 @@ public class GrafoSucursales {
     }
     
     // Calcula la distancia mínima entre dos sucursales
-    public int dijkstra(int idOrigen, int idDestino) {
-        // Se buscan los índices reales dentro del grafo
+    public int dijkstra(int idOrigen, int idDestino,  String criterio) {
         int origen = buscarIndiceSucursal(idOrigen);
+
         int destino = buscarIndiceSucursal(idDestino);
 
-        // Si alguna sucursal no existe, no puede calcularse
         if (origen == -1 || destino == -1) {
             return -1;
         }
 
-        // Arreglo de distancias mínimas acumuladas
         int[] distancias = new int[cantidadSucursales];
 
-        // Controla qué nodos ya fueron procesados
         boolean[] visitado = new boolean[cantidadSucursales];
 
-        // Inicializa todas las distancias en infinito
         for (int i = 0; i < cantidadSucursales; i++) {
             distancias[i] = Integer.MAX_VALUE;
             visitado[i] = false;
         }
 
-        // La distancia desde origen hacia sí mismo es 0
         distancias[origen] = 0;
 
-        // Se repite para cada sucursal
         for (int i = 0; i < cantidadSucursales; i++) {
+            int actual = obtenerMenorDistancia(distancias, visitado);
 
-            // Busca el nodo no visitado con menor distancia
-            int actual = obtenerMenorDistancia(
-                    distancias,
-                    visitado
-            );
-
-            // Si no hay más nodos alcanzables, termina
             if (actual == -1) {
                 break;
             }
 
-            // Marca como visitado
             visitado[actual] = true;
 
-            // Recorre todas las conexiones del nodo actual
-            ListaEnlazada<ConexionSucursal> lista =
-                    conexiones[actual];
-
+            ListaEnlazada<ConexionSucursal> lista = conexiones[actual];
             for (int j = 0; j < lista.obtenerTamanio(); j++) {
 
-                ConexionSucursal conexion =
-                        lista.obtener(j);
+                ConexionSucursal conexion = lista.obtener(j);
 
-                int vecino = buscarIndiceSucursal(
-                        conexion.getDestino().getId()
-                );
+                int vecino = buscarIndiceSucursal(conexion.getDestino().getId());
 
-                int peso = conexion.getPeso();
+                int peso;
 
-                // Relajación clásica de Dijkstra
-                if (!visitado[vecino] &&
-                    distancias[actual] != Integer.MAX_VALUE &&
+                if (criterio.equalsIgnoreCase("COSTO")) {
+                    peso = conexion.getCosto();
+                } else {
+                    peso = conexion.getTiempo();
+                }
+
+                if (!visitado[vecino] && distancias[actual] != Integer.MAX_VALUE &&
                     distancias[actual] + peso < distancias[vecino]) {
 
-                    distancias[vecino] =
-                            distancias[actual] + peso;
+                    distancias[vecino] = distancias[actual] + peso;
                 }
             }
         }
 
-        // Si sigue infinito, no existe ruta
         if (distancias[destino] == Integer.MAX_VALUE) {
             return -1;
         }

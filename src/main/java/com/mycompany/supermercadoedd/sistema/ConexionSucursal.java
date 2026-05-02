@@ -5,39 +5,47 @@ package com.mycompany.supermercadoedd.sistema;
  * @author ronald
  */
 public class ConexionSucursal {
-    // Sucursal destino de la conexión
+     // sucursal destino
     private Sucursal destino;
 
-    // Peso de la conexión (tiempo/costo de traslado)
-    private int peso;
+    // tiempo de traslado
+    private int tiempo;
 
-    // Inicializa una nueva conexión
-    public ConexionSucursal(Sucursal destino, int peso) {
+    // costo de traslado
+    private int costo;
+
+    public ConexionSucursal( Sucursal destino,int tiempo,int costo) {
         this.destino = destino;
-        this.peso = peso;
+        this.tiempo = tiempo;
+        this.costo = costo;
     }
 
-    // Retorna la sucursal destino
     public Sucursal getDestino() {
         return destino;
     }
 
-    // Retorna el peso de la conexión
-    public int getPeso() {
-        return peso;
+    public int getTiempo() {
+        return tiempo;
     }
 
-    // Permite modificar el peso
-    public void setPeso(int peso) {
-        this.peso = peso;
+    public int getCosto() {
+        return costo;
     }
 
-    // Representación en texto
+    public void setTiempo(int tiempo) {
+        this.tiempo = tiempo;
+    }
+
+    public void setCosto(int costo) {
+        this.costo = costo;
+    }
+
     @Override
     public String toString() {
         return "ConexionSucursal{" +
                 "destino=" + destino.getNombre() +
-                ", peso=" + peso +
+                ", tiempo=" + tiempo +
+                ", costo=" + costo +
                 '}';
     }
 }

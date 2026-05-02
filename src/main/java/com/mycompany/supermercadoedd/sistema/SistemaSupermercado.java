@@ -71,7 +71,7 @@ public class SistemaSupermercado {
     }
     
     // Traslada cierta cantidad de un producto desde una sucursal origen hacia una sucursal destino
-    public boolean trasladarProducto(int idOrigen, int idDestino, String codigoBarras, int cantidad) {
+    public boolean trasladarProducto(int idOrigen, int idDestino, String codigoBarras, int cantidad, String criterio) {
         Sucursal origen = buscarSucursalPorId(idOrigen);
         Sucursal destino = buscarSucursalPorId(idDestino);
 
@@ -79,13 +79,13 @@ public class SistemaSupermercado {
             return false;
         }
 
-        int distancia = grafo.dijkstra(idOrigen,idDestino);
-
+        int distancia = grafo.dijkstra(idOrigen,idDestino, criterio);
+        
         if (distancia == -1) {
             return false;
         }
 
-        return gestorDespacho.trasladarProducto(origen,destino, codigoBarras, cantidad, distancia);
+        return gestorDespacho.trasladarProducto(origen,destino, codigoBarras, cantidad, distancia, criterio);
     }
     
     public String mostrarColasSucursal(int idSucursal) {
@@ -239,5 +239,45 @@ public class SistemaSupermercado {
 
         // Se delega la comparación
         return comparador.compararOrdenamientos(sucursal);
+    }
+    
+    // Compara la mejor ruta entre dos sucursales usando criterio de tiempo y criterio de costo
+    public String compararTransferencia(int idOrigen, int idDestino) {
+        Sucursal origen = buscarSucursalPorId(idOrigen);
+        Sucursal destino = buscarSucursalPorId(idDestino);
+
+        if (origen == null || destino == null) {
+            return "Una o ambas sucursales no existen.";
+        }
+
+        // Calcula la mejor ruta considerando tiempo
+        int mejorTiempo = grafo.dijkstra(idOrigen,idDestino, "TIEMPO");
+
+        // Calcula la mejor ruta considerando costo
+        int mejorCosto = grafo.dijkstra(idOrigen,idDestino,"COSTO");
+
+        // Si alguna ruta no existe, se reporta claramente
+        if (mejorTiempo == -1 || mejorCosto == -1) {
+            return "No existe ruta disponible entre las sucursales.";
+        }
+
+        // Construye el reporte final para el usuario
+        String reporte = "";
+
+        reporte += "\n=== COMPARACIÓN DE TRANSFERENCIA ===\n";
+        reporte += "Sucursal origen: " + origen.getNombre() + "\n";
+        reporte += "Sucursal destino: " + destino.getNombre() + "\n\n";
+        reporte += "Mejor ruta por TIEMPO: " + mejorTiempo + "\n";
+        reporte += "Mejor ruta por COSTO: "+ mejorCosto + "\n\n";
+
+        // Determina cuál criterio resulta más conveniente
+        if (mejorTiempo < mejorCosto) {
+            reporte += "La transferencia más eficiente " + "es por TIEMPO.\n";
+        } else if (mejorCosto < mejorTiempo) {
+            reporte += "La transferencia más eficiente "+ "es por COSTO.\n";
+        } else {
+            reporte += "Ambos criterios presentan "+ "el mismo valor.\n";
+        }
+        return reporte;
     }
 }

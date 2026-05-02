@@ -7,7 +7,7 @@ import com.mycompany.supermercadoedd.modelos.Producto;
 // Maneja todo el sistema de colas y despacho entre sucursales
 public class GestorDespacho {
     // Procesa el traslado completo entre dos sucursales
-    public boolean trasladarProducto(Sucursal origen, Sucursal destino, String codigoBarras, int cantidad, int distancia) {
+    public boolean trasladarProducto(Sucursal origen, Sucursal destino, String codigoBarras, int cantidad, int distancia, String criterio) {
         if (origen == null || destino == null) {
             return false;
         }
@@ -30,15 +30,15 @@ public class GestorDespacho {
 
         // Se crea copia del producto para traslado
         Producto productoTraslado = new Producto(
-                        productoOrigen.getNombre(),
-                        productoOrigen.getCodigoBarras(),
-                        productoOrigen.getCategoria(),
-                        productoOrigen.getFechaCaducidad(),
-                        productoOrigen.getMarca(),
-                        productoOrigen.getPrecio(),
-                        cantidad
-                );
-        
+                productoOrigen.getNombre(),
+                productoOrigen.getCodigoBarras(),
+                productoOrigen.getCategoria(),
+                productoOrigen.getFechaCaducidad(),
+                productoOrigen.getMarca(),
+                productoOrigen.getPrecio(),
+                cantidad
+        );
+
         // Paso 1: origen → cola salida
         origen.getColaSalida().encolar(productoTraslado);
 
@@ -57,20 +57,28 @@ public class GestorDespacho {
         Producto preparado = destino.getColaPreparacionTraspaso().desencolar();
 
         // Paso 6: se intenta sumar stock
-        boolean aumento = destino.aumentarStock(preparado.getCodigoBarras(),cantidad);
+        boolean aumento = destino.aumentarStock(preparado.getCodigoBarras(), cantidad);
 
         // Si no existe, se agrega completo
         if (!aumento) {
             destino.agregarProducto(preparado);
         }
 
+        String tipoResultado;
+
+        if (criterio.equalsIgnoreCase("COSTO")) {
+            tipoResultado = "Costo estimado";
+        } else {
+            tipoResultado = "Tiempo estimado";
+        }
+
         System.out.println(
-                "\n=== TRASLADO COMPLETADO ===\n"
+                "\n=== TRASLDO COMPLETADO ===\n"
                 + "Origen: " + origen.getNombre() + "\n"
                 + "Destino: " + destino.getNombre() + "\n"
                 + "Producto: " + preparado.getNombre() + "\n"
                 + "Cantidad: " + cantidad + "\n"
-                + "Tiempo estimado: " + distancia + "\n"
+                + tipoResultado + ": " + distancia + "\n"
         );
 
         return true;
