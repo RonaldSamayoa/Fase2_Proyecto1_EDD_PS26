@@ -32,6 +32,7 @@ public class MainFrame {
         Button btnOrdenamientos = new Button("Ordenamientos");
         Button btnSucursales = new Button("Registrar Sucursal");
         Button btnCompararRutas = new Button("Comparar Rutas");
+        Button btnInventario = new Button("Inventario");
         Button btnSalir = new Button("Salir");
 
         // Tamaño uniforme
@@ -41,6 +42,7 @@ public class MainFrame {
         btnOrdenamientos.setPrefWidth(250);
         btnSucursales.setPrefWidth(250);
         btnCompararRutas.setPrefWidth(250);
+        btnInventario.setPrefWidth(250);
         btnSalir.setPrefWidth(250);
 
         // Abre módulo de productos
@@ -49,9 +51,11 @@ public class MainFrame {
             ventana.mostrar(stage);
         });
 
-        // Temporales por ahora
         btnBusquedas.setOnAction(e -> {
-            System.out.println("Abrir módulo búsquedas");
+            VentanaBusquedas ventana =
+                    new VentanaBusquedas(sistema);
+
+            ventana.mostrar(stage);
         });
 
         btnTransferencias.setOnAction(e -> {
@@ -78,6 +82,13 @@ public class MainFrame {
 
             ventana.mostrar(stage);
         });
+        
+        btnInventario.setOnAction(e -> {
+            VentanaInventario ventana =
+                    new VentanaInventario(sistema);
+
+            ventana.mostrar(stage);
+        });
 
         // Cierra sistema
         btnSalir.setOnAction(e -> {
@@ -96,6 +107,7 @@ public class MainFrame {
                 btnCompararRutas,
                 btnTransferencias,
                 btnOrdenamientos,
+                btnInventario,
                 btnSalir
         );
 

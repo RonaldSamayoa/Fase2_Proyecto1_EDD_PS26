@@ -1,5 +1,6 @@
 package com.mycompany.supermercadoedd.sistema;
-
+import java.io.FileWriter;
+import java.io.IOException;
 /**
  *
  * @author ronald
@@ -26,11 +27,9 @@ public class ResultadoCarga {
 
     // Aumenta en uno los registros fallidos y guarda el error
     public void agregarFallido(String error) {
-
         registrosFallidos++;
-
-        // Se acumula el detalle del error para reportes posteriores
         detalleErrores += error + "\n";
+        logError(error); //GUARDA EN ARCHIVO
     }
 
     // Retorna la cantidad de registros exitosos
@@ -56,5 +55,13 @@ public class ResultadoCarga {
                 ", registrosFallidos=" + registrosFallidos +
                 ", detalleErrores=\n" + detalleErrores +
                 '}';
+    }
+    
+    public void logError(String error) {
+        try (FileWriter fw = new FileWriter("errors.log", true)) {
+            fw.write(error + "\n");
+        } catch (IOException e) {
+            System.out.println("Error escribiendo log.");
+        }
     }
 }

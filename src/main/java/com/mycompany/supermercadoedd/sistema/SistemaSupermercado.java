@@ -294,4 +294,18 @@ public class SistemaSupermercado {
         // Se delega el proceso al gestor especializado
         return gestorDevoluciones.devolverProducto(sucursal, codigoBarras,cantidad);
     }
+    
+    // Retorna el grafo de sucursales
+    public GrafoSucursales getGrafo() {
+        return grafo;
+    }
+    
+    public boolean existeCodigoBarras(String codigo) {
+        for (int i = 0; i < sucursales.obtenerTamanio(); i++) {
+            if (sucursales.obtener(i).buscarProductoPorCodigo(codigo) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
