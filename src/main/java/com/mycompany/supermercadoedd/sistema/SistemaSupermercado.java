@@ -427,4 +427,8 @@ public class SistemaSupermercado {
         grafo.agregarConexion(origen, destino, tiempo, costo);
         return true;
     }
+    
+    public boolean existeSucursal(int id) {
+        return buscarSucursalPorId(id) != null;
+    }
 }
