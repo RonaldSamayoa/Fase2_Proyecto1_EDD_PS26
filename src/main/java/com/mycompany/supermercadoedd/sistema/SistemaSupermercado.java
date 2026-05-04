@@ -26,10 +26,32 @@ public class SistemaSupermercado {
     }
 
     // Registra una nueva sucursal en el sistema
-    public void agregarSucursal(Sucursal sucursal) {
-        // Inserta la sucursal al final de la lista
+    public boolean agregarSucursal(Sucursal sucursal) {
+        if (sucursal == null) return false;
+
+        // Validación de ID único
+        if (buscarSucursalPorId(sucursal.getId()) != null) {
+            return false;
+        }
+
+        // Validación de campos obligatorios
+        if (sucursal.getId() <= 0) return false;
+
+        if (sucursal.getNombre() == null || sucursal.getNombre().trim().isEmpty()) {
+            return false;
+        }
+
+        if (sucursal.getUbicacion() == null || sucursal.getUbicacion().trim().isEmpty()) {
+            return false;
+        }
+        if (sucursal.getTiempoIngreso() <= 0 ||sucursal.getTiempoTraspaso() <= 0 || sucursal.getTiempoDespacho() <= 0) {
+            return false;
+        }
+
         sucursales.insertarAlFinal(sucursal);
-        grafo.agregarSucursal(sucursal); //agregar dentro del grafo
+        grafo.agregarSucursal(sucursal);
+
+        return true;
     }
 
     // Busca una sucursal usando su id
@@ -50,14 +72,31 @@ public class SistemaSupermercado {
 
     // Registra un producto dentro de su sucursal correspondiente
     public boolean registrarProducto(int idSucursal, Producto producto) {
-        // Busca la sucursal destino
+        if (producto == null) return false;
+
         Sucursal sucursal = buscarSucursalPorId(idSucursal);
 
-        // Si existe, inserta el producto
-        if (sucursal != null) {
-            return sucursal.agregarProducto(producto);
+        if (sucursal == null) return false;
+
+        if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) return false;
+
+        if (producto.getCodigoBarras() == null || producto.getCodigoBarras().trim().isEmpty()) return false;
+
+        if (producto.getCategoria() == null || producto.getCategoria().trim().isEmpty()) return false;
+
+        if (producto.getFechaCaducidad() == null || producto.getFechaCaducidad().trim().isEmpty()) return false;
+
+        if (producto.getMarca() == null || producto.getMarca().trim().isEmpty()) return false;
+
+        if (producto.getPrecio() <= 0) return false;
+
+        if (producto.getStock() <= 0) return false;
+
+        if (existeCodigoBarras(producto.getCodigoBarras())) {
+            return false;
         }
-        return false;
+
+        return sucursal.agregarProducto(producto);
     }
 
     // Muestra todas las sucursales registradas
@@ -101,14 +140,16 @@ public class SistemaSupermercado {
     
     // Elimina un producto de una sucursal específica usando su código de barras
     public boolean eliminarProducto(int idSucursal, String codigoBarras) {
-        // Busca la sucursal correspondiente
+        if (codigoBarras == null || codigoBarras.trim().isEmpty()) {
+            return false;
+        }
+
         Sucursal sucursal = buscarSucursalPorId(idSucursal);
 
-        // Si la sucursal no existe, falla
         if (sucursal == null) {
             return false;
         }
-        // Delega la eliminación a la sucursal
+
         return sucursal.eliminarProducto(codigoBarras);
     }
     
@@ -368,5 +409,22 @@ public class SistemaSupermercado {
         if (generarImagen) {
             GeneradorReportes.generarImagen(nombre);
         }
+    }
+    
+    public boolean agregarConexion(int origen, int destino, int tiempo, int costo) {
+        // Validar sucursales existentes
+        if (buscarSucursalPorId(origen) == null ||
+            buscarSucursalPorId(destino) == null) {
+            return false;
+        }
+
+        // No permitir conexión a sí mismo
+        if (origen == destino) return false;
+
+        // Validar valores positivos
+        if (tiempo <= 0 || costo <= 0) return false;
+
+        grafo.agregarConexion(origen, destino, tiempo, costo);
+        return true;
     }
 }

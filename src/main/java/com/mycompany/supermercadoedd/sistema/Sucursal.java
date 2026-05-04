@@ -180,6 +180,18 @@ public class Sucursal {
     public String getUbicacion() {
         return ubicacion;
     }
+    
+    public int getTiempoIngreso() {
+        return tiempoIngreso;
+    }
+    
+    public int getTiempoTraspaso() {
+        return tiempoTraspaso;
+    }
+
+    public int getTiempoDespacho() {
+        return tiempoDespacho;
+    }    
 
     // Retorna el inventario
     public ListaEnlazada<Producto> getInventario() {
