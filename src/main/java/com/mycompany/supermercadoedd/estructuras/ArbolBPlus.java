@@ -494,4 +494,72 @@ public class ArbolBPlus<T extends Comparable<T>> {
 
         nodo.numeroClaves--;
     }
+    
+    public String generarDOT() {
+        StringBuilder dot = new StringBuilder();
+        dot.append("digraph ArbolBPlus {\n");
+        dot.append("node [shape=record];\n");
+
+        generarDOTInterno(raiz, dot);
+        generarEnlacesHojas(dot);
+
+        dot.append("}\n");
+        return dot.toString();
+    }
+
+    private void generarDOTInterno(NodoBPlus nodo, StringBuilder dot) {
+        if (nodo == null) return;
+
+        String id = "nodo" + System.identityHashCode(nodo);
+
+        dot.append(id).append(" [label=\"");
+
+        for (int i = 0; i < nodo.numeroClaves; i++) {
+            dot.append("<f").append(i).append("> ");
+            dot.append(nodo.claves[i]);
+
+            if (i < nodo.numeroClaves - 1) {
+                dot.append(" | ");
+            }
+        }
+
+        dot.append("\"];\n");
+
+        if (!nodo.esHoja) {
+            for (int i = 0; i <= nodo.numeroClaves; i++) {
+                if (nodo.hijos[i] != null) {
+                    String hijoId = "nodo" + System.identityHashCode(nodo.hijos[i]);
+
+                    dot.append(id)
+                       .append(":f").append(i)
+                       .append(" -> ")
+                       .append(hijoId)
+                       .append(";\n");
+
+                    generarDOTInterno(nodo.hijos[i], dot);
+                }
+            }
+        }
+    }
+
+    private void generarEnlacesHojas(StringBuilder dot) {
+        NodoBPlus actual = raiz;
+
+        while (!actual.esHoja) {
+            actual = actual.hijos[0];
+        }
+
+        while (actual != null && actual.siguiente != null) {
+            String a = "nodo" + System.identityHashCode(actual);
+            String b = "nodo" + System.identityHashCode(actual.siguiente);
+
+            dot.append(a)
+               .append(" -> ")
+               .append(b)
+               .append(" [color=blue];\n");
+
+            actual = actual.siguiente;
+        }
+    }
+
 }

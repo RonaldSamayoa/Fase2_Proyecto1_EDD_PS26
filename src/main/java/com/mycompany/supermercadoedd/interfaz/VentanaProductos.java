@@ -23,26 +23,17 @@ public class VentanaProductos {
     public void mostrar(Stage stage) {
         Label titulo = new Label("Gestión de Productos");
 
-        Button btnCargaCSV = new Button("Carga Masiva CSV");
         Button btnRegistrar = new Button("Registrar Producto");
         Button btnEliminar = new Button("Eliminar Producto");
         Button btnRollback = new Button("Deshacer Última Operación");
         Button btnInventario = new Button("Inventario y Ordenamientos");
         Button btnRegresar = new Button("Regresar");
 
-        btnCargaCSV.setPrefWidth(250);
         btnRegistrar.setPrefWidth(280);
         btnEliminar.setPrefWidth(280);
         btnRollback.setPrefWidth(280);
         btnInventario.setPrefWidth(280);
         btnRegresar.setPrefWidth(280);
-
-        btnCargaCSV.setOnAction(e -> {
-            VentanaCargaCSV ventana =
-                    new VentanaCargaCSV(sistema);
-
-            ventana.mostrar(stage);
-        });
 
         // Abre ventana de registro
         btnRegistrar.setOnAction(e -> {
@@ -90,7 +81,6 @@ public class VentanaProductos {
 
         root.getChildren().addAll(
                 titulo,
-                btnCargaCSV,
                 btnRegistrar,
                 btnEliminar,
                 btnRollback,

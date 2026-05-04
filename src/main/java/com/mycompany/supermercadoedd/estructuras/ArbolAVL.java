@@ -297,4 +297,42 @@ public class ArbolAVL <T extends Comparable<T>> {
             llenarInOrden(nodo.derecho, lista);
         }
     }
+    
+    // Genera el DOT completo del árbol AVL
+    public String generarDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph AVL {\n");
+
+        if (raiz != null) {
+            generarDotRecursivo(raiz, sb);
+        }
+
+        sb.append("}\n");
+        return sb.toString();
+    }
+
+    // Recorre el árbol y genera conexiones
+    private void generarDotRecursivo(Nodo nodo, StringBuilder sb) {
+        if (nodo != null) {
+
+            if (nodo.izquierdo != null) {
+                sb.append("\"")
+                  .append(nodo.dato)
+                  .append("\" -> \"")
+                  .append(nodo.izquierdo.dato)
+                  .append("\";\n");
+            }
+
+            if (nodo.derecho != null) {
+                sb.append("\"")
+                  .append(nodo.dato)
+                  .append("\" -> \"")
+                  .append(nodo.derecho.dato)
+                  .append("\";\n");
+            }
+
+            generarDotRecursivo(nodo.izquierdo, sb);
+            generarDotRecursivo(nodo.derecho, sb);
+        }
+    }
 }

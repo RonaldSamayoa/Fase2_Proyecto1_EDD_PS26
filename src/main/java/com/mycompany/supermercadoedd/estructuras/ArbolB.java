@@ -559,4 +559,52 @@ public class ArbolB<T extends Comparable<T>> {
             buscarPorRango(nodo.hijos[i],inicio, fin,resultados);
         }
     }
+    
+    // Genera representación DOT del Árbol B
+    public String generarDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph ArbolB {\n");
+        sb.append("node [shape=record];\n");
+
+        generarDotRecursivo(raiz, sb);
+
+        sb.append("}\n");
+        return sb.toString();
+    }
+
+    // Recorre el árbol y genera nodos y conexiones
+    private void generarDotRecursivo(NodoB nodo, StringBuilder sb) {
+        if (nodo == null) return;
+
+        // ID único del nodo (usa hash para evitar conflictos)
+        String idNodo = "nodo" + System.identityHashCode(nodo);
+
+        // Construcción del label tipo B-Tree
+        sb.append(idNodo).append(" [label=\"");
+
+        for (int i = 0; i < nodo.numeroClaves; i++) {
+            sb.append("<f").append(i).append(">|")
+              .append(nodo.claves[i])
+              .append("|");
+        }
+
+        sb.append("<f").append(nodo.numeroClaves).append(">\" ];\n");
+
+        // Conexiones con hijos
+        if (!nodo.esHoja) {
+            for (int i = 0; i <= nodo.numeroClaves; i++) {
+                if (nodo.hijos[i] != null) {
+                    String idHijo = "nodo" + System.identityHashCode(nodo.hijos[i]);
+
+                    sb.append(idNodo)
+                      .append(":f").append(i)
+                      .append(" -> ")
+                      .append(idHijo)
+                      .append(";\n");
+
+                    generarDotRecursivo(nodo.hijos[i], sb);
+                }
+            }
+        }
+    }
 }

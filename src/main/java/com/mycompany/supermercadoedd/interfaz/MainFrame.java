@@ -26,6 +26,7 @@ public class MainFrame {
         Label titulo = new Label("Sistema de Gestión de Supermercados");
 
         // Botones principales
+        Button btnCargaCSV = new Button("Carga Masiva CSV");
         Button btnProductos = new Button("Gestión de Productos");
         Button btnBusquedas = new Button("Búsquedas");
         Button btnTransferencias = new Button("Transferencias");
@@ -33,9 +34,11 @@ public class MainFrame {
         Button btnSucursales = new Button("Registrar Sucursal");
         Button btnCompararRutas = new Button("Comparar Rutas");
         Button btnInventario = new Button("Inventario");
+        Button btnReportes = new Button("Reportes");
         Button btnSalir = new Button("Salir");
 
         // Tamaño uniforme
+        btnCargaCSV.setPrefWidth(250);
         btnProductos.setPrefWidth(250);
         btnBusquedas.setPrefWidth(250);
         btnTransferencias.setPrefWidth(250);
@@ -43,8 +46,14 @@ public class MainFrame {
         btnSucursales.setPrefWidth(250);
         btnCompararRutas.setPrefWidth(250);
         btnInventario.setPrefWidth(250);
+        btnReportes.setPrefWidth(250);
         btnSalir.setPrefWidth(250);
 
+        btnCargaCSV.setOnAction(e -> {
+            VentanaCargaCSV ventana = new VentanaCargaCSV(sistema);
+            ventana.mostrar(stage);
+        });
+        
         // Abre módulo de productos
         btnProductos.setOnAction(e -> {
             VentanaProductos ventana = new VentanaProductos(sistema);
@@ -89,6 +98,11 @@ public class MainFrame {
 
             ventana.mostrar(stage);
         });
+        
+        btnReportes.setOnAction(e -> {
+            VentanaReportes ventana = new VentanaReportes(sistema);
+            ventana.mostrar(stage);
+        });
 
         // Cierra sistema
         btnSalir.setOnAction(e -> {
@@ -101,6 +115,7 @@ public class MainFrame {
 
         root.getChildren().addAll(
                 titulo,
+                btnCargaCSV,
                 btnSucursales,
                 btnProductos,
                 btnBusquedas,
@@ -108,6 +123,7 @@ public class MainFrame {
                 btnTransferencias,
                 btnOrdenamientos,
                 btnInventario,
+                btnReportes,
                 btnSalir
         );
 

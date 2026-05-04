@@ -2,6 +2,7 @@
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/sistema/Sucursal.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/sistema/OperacionRollback.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/modelos/Producto.java
+/home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/interfaz/VentanaReportes.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/sistema/ComparadorOrdenamientos.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/estructuras/ListaEnlazada.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/estructuras/ArbolBPlus.java
@@ -16,6 +17,7 @@
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/aplicacion/Principal.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/sistema/ResultadoCarga.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/estructuras/TablaHash.java
+/home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/sistema/GeneradorReportes.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/interfaz/MainFrame.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/sistema/CargadorConexiones.java
 /home/ronald/NetBeansProjects/SupermercadoEDD/src/main/java/com/mycompany/supermercadoedd/estructuras/ArbolB.java

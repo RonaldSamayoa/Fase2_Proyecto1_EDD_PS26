@@ -26,6 +26,7 @@ com/mycompany/supermercadoedd/sistema/ResultadoCarga.class
 com/mycompany/supermercadoedd/aplicacion/Principal.class
 com/mycompany/supermercadoedd/interfaz/VentanaCompararRutas.class
 com/mycompany/supermercadoedd/sistema/ComparadorOrdenamientos.class
+com/mycompany/supermercadoedd/interfaz/VentanaReportes.class
 com/mycompany/supermercadoedd/interfaz/VentanaRegistrarProducto.class
 com/mycompany/supermercadoedd/interfaz/VentanaEliminarProducto.class
 com/mycompany/supermercadoedd/sistema/CargadorConexiones.class
@@ -34,6 +35,7 @@ com/mycompany/supermercadoedd/interfaz/VentanaInventario.class
 com/mycompany/supermercadoedd/sistema/GestorDespacho.class
 com/mycompany/supermercadoedd/estructuras/ListaEnlazada$Nodo.class
 com/mycompany/supermercadoedd/sistema/OperacionRollback.class
+com/mycompany/supermercadoedd/sistema/GeneradorReportes.class
 com/mycompany/supermercadoedd/estructuras/ArbolAVL$Nodo.class
 com/mycompany/supermercadoedd/sistema/GestorDevoluciones.class
 com/mycompany/supermercadoedd/sistema/CargadorSucursales.class

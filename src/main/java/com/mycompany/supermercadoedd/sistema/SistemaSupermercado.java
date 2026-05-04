@@ -308,4 +308,65 @@ public class SistemaSupermercado {
         }
         return false;
     }
+    
+    // ====================== REPORTES DE ESTRUCTURAS ======================
+    // AVL
+    public void generarReporteAVL(Sucursal sucursal, boolean generarImagen) {
+        String nombre = "avl_sucursal_" + sucursal.getId();
+
+        String dot = sucursal.getArbolAVL().generarDot();
+        GeneradorReportes.guardarDot(dot, nombre);
+
+        if (generarImagen) {
+            GeneradorReportes.generarImagen(nombre);
+        }
+    }
+
+    // ÁRBOL B
+    public void generarReporteArbolB(Sucursal sucursal, boolean generarImagen) {
+        String nombre = "arbolB_sucursal_" + sucursal.getId();
+
+        String dot = sucursal.getArbolB().generarDot();
+        GeneradorReportes.guardarDot(dot, nombre);
+
+        if (generarImagen) {
+            GeneradorReportes.generarImagen(nombre);
+        }
+    }
+
+    // ÁRBOL B+
+    public void generarReporteArbolBPlus(Sucursal sucursal, boolean generarImagen) {
+        String nombre = "arbolBPlus_sucursal_" + sucursal.getId();
+
+        String dot = sucursal.getArbolBPlus().generarDOT();
+        GeneradorReportes.guardarDot(dot, nombre);
+
+        if (generarImagen) {
+            GeneradorReportes.generarImagen(nombre);
+        }
+    }
+
+    // TABLA HASH
+    public void generarReporteTablaHash(Sucursal sucursal, boolean generarImagen) {
+        String nombre = "hash_sucursal_" + sucursal.getId();
+
+        String dot = sucursal.getTablaHash().generarDot();
+        GeneradorReportes.guardarDot(dot, nombre);
+
+        if (generarImagen) {
+            GeneradorReportes.generarImagen(nombre);
+        }
+    }
+
+    // GRAFO DE SUCURSALES
+    public void generarReporteGrafo(boolean generarImagen) {
+        String nombre = "grafo_sucursales";
+
+        String dot = grafo.generarDOT();
+        GeneradorReportes.guardarDot(dot, nombre);
+
+        if (generarImagen) {
+            GeneradorReportes.generarImagen(nombre);
+        }
+    }
 }

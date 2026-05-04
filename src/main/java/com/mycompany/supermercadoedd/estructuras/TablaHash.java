@@ -219,4 +219,39 @@ public class TablaHash<K,V> {
 
         return sb.toString();
     }
+    
+    // Genera representación DOT de la tabla hash
+    public String generarDot() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("digraph Hash {\n");
+        sb.append("node [shape=record];\n");
+
+        for (int i = 0; i < capacidad; i++) {
+
+            sb.append("nodo").append(i)
+              .append(" [label=\"{")
+              .append(i)
+              .append("|");
+
+            ListaEnlazada<Entrada<K, V>> lista = tabla[i];
+
+            if (lista.estaVacia()) {
+                sb.append("null");
+            } else {
+                for (int j = 0; j < lista.obtenerTamanio(); j++) {
+                    sb.append(lista.obtener(j).toString());
+
+                    if (j < lista.obtenerTamanio() - 1) {
+                        sb.append("|");
+                    }
+                }
+            }
+
+            sb.append("}\"];\n");
+        }
+
+        sb.append("}\n");
+        return sb.toString();
+    }
 }

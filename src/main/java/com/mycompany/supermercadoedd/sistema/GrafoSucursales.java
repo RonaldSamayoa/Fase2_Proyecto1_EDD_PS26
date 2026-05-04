@@ -236,7 +236,28 @@ public class GrafoSucursales {
                 indice = i;
             }
         }
-
         return indice;
+    }
+    
+    public String generarDOT() {
+        String dot = "graph G {\n";
+
+        for (int i = 0; i < cantidadSucursales; i++) {
+
+            Sucursal origen = sucursales.obtener(i);
+
+            ListaEnlazada<ConexionSucursal> lista = conexiones[i];
+            for (int j = 0; j < lista.obtenerTamanio(); j++) {
+
+                ConexionSucursal c = lista.obtener(j);
+
+                dot += "\"" + origen.getNombre() + "\" -- \"" +
+                       c.getDestino().getNombre() +
+                       "\" [label=\"T:" + c.getTiempo() +
+                       " C:" + c.getCosto() + "\"];\n";
+            }
+        }
+        dot += "}";
+        return dot;
     }
 }

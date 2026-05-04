@@ -536,4 +536,20 @@ public class Sucursal {
     public Cola<Producto> getColaSalida() {
         return colaSalida;
     }
+    
+    public ArbolAVL<Producto> getArbolAVL() {
+        return arbolAVL;
+    }
+
+    public TablaHash<String, Producto> getTablaHash() {
+        return tablaHash;
+    }
+
+    public ArbolB<String> getArbolB() {
+        return arbolB;
+    }
+
+    public ArbolBPlus<String> getArbolBPlus() {
+        return arbolBPlus;
+    }
 }
